@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pipeline Metrics — VulnFeed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #060b16;
+      --surface:      #0d1525;
+      --card-bg:      rgba(13, 21, 42, 0.7);
+      --card-border:  rgba(148, 163, 184, 0.08);
+      --text-primary: #e2e8f0;
+      --text-secondary: #64748b;
+      --text-muted:   #334155;
+      --accent:       #a8ff3e;
+      --accent-dim:   rgba(168, 255, 62, 0.15);
+      --c-confirmed:  #a8ff3e;
+      --c-analyzed:   #f59e0b;
+      --c-qualifying: #38bdf8;
+      --c-critical:   #ff3e5e;
+      --c-high:       #ff8c3e;
+      --c-medium:     #ffd93e;
+      --c-low:        #3eb8ff;
+      --font-ui:      'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --radius:       12px;
+      --radius-sm:    6px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.018) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bg-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.08; }
+    .bg-orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #7c3aed, transparent 70%); top: -200px; right: -100px; }
+    .bg-orb-2 { width: 450px; height: 450px; background: radial-gradient(circle, #0ea5e9, transparent 70%); bottom: 0; left: -100px; }
+
+    .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6, 11, 22, 0.88);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .back-link {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-secondary);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text-primary); }
+    .back-link svg { width: 14px; height: 14px; }
+    .header-title {
+      font-size: 15px; font-weight: 600; color: var(--text-primary);
+    }
+    .header-spacer { flex: 1; }
+    .updated-label {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+    }
+
+    /* ── Page sections ──────────────────────────────────────── */
+    .page-body { padding: 40px 0 80px; display: flex; flex-direction: column; gap: 48px; }
+
+    .section-title {
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* ── Funnel ─────────────────────────────────────────────── */
+    .funnel-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      align-items: end;
+    }
+    .funnel-col {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .funnel-bar-wrap {
+      width: 100%; display: flex; align-items: flex-end;
+      height: 120px;
+    }
+    .funnel-bar {
+      width: 100%; border-radius: 6px 6px 0 0;
+      min-height: 4px;
+      position: relative;
+      transition: opacity 0.2s;
+    }
+    .funnel-bar:hover { opacity: 0.85; }
+    .funnel-col-label {
+      font-size: 11px; color: var(--text-muted);
+      text-align: center; line-height: 1.4;
+      white-space: nowrap;
+    }
+    .funnel-col-value {
+      font-family: var(--font-mono);
+      font-size: 18px; font-weight: 600;
+      color: var(--text-primary);
+    }
+    .funnel-col-pct {
+      font-family: var(--font-mono);
+      font-size: 10px; color: var(--text-muted);
+    }
+
+    /* ── Stat row ───────────────────────────────────────────── */
+    .stat-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .stat-card-label {
+      font-size: 11px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .stat-card-value {
+      font-family: var(--font-mono);
+      font-size: 28px; font-weight: 600;
+      line-height: 1;
+    }
+    .stat-card-sub {
+      font-size: 11px; color: var(--text-muted); margin-top: 4px;
+    }
+
+    /* ── Clone-qualify strip ───────────────────────────────── */
+    .clone-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 8px; margin-top: 20px;
+    }
+    .clone-col {
+      background: rgba(168,99,255,0.06);
+      border: 1px solid rgba(168,99,255,0.15);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .clone-col-value {
+      font-family: var(--font-mono); font-size: 20px; font-weight: 600;
+      color: rgba(200,160,255,0.9);
+    }
+    .clone-col-label {
+      font-size: 10px; color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .clone-col-pct {
+      font-family: var(--font-mono); font-size: 10px;
+      color: rgba(168,99,255,0.5);
+    }
+
+    /* ── Clone badge ────────────────────────────────────────── */
+    .clone-badge {
+      display: inline-flex; align-items: center;
+      font-family: var(--font-mono);
+      font-size: 9px; font-weight: 600; letter-spacing: 0.07em;
+      padding: 2px 6px; border-radius: 4px; margin-left: 4px;
+      background: rgba(168,99,255,0.1); color: rgba(200,160,255,0.85);
+      border: 1px solid rgba(168,99,255,0.25);
+      white-space: nowrap;
+    }
+
+    /* ── Rejection breakdown ────────────────────────────────── */
+    .reject-list { display: flex; flex-direction: column; gap: 10px; }
+    .reject-row {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .reject-key {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-secondary); width: 160px; flex-shrink: 0;
+    }
+    .reject-bar-wrap {
+      flex: 1; height: 8px;
+      background: rgba(148,163,184,0.06);
+      border-radius: 4px; overflow: hidden;
+    }
+    .reject-bar {
+      height: 100%; border-radius: 4px;
+      background: rgba(100,116,139,0.4);
+      transition: width 0.6s ease;
+    }
+    .reject-count {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-muted); width: 28px; text-align: right; flex-shrink: 0;
+    }
+
+    /* ── Pipeline table ─────────────────────────────────────── */
+    .table-wrap {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 12px;
+    }
+    thead th {
+      padding: 10px 16px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted);
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(148,163,184,0.02);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(148,163,184,0.05);
+      transition: background 0.15s;
+      cursor: default;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(148,163,184,0.03); }
+    td { padding: 12px 16px; vertical-align: top; }
+
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 9px; font-weight: 600; letter-spacing: 0.07em;
+      padding: 3px 7px; border-radius: 4px;
+      white-space: nowrap;
+    }
+    .tier-badge.CONFIRMED { background: rgba(168,255,62,0.1); color: var(--c-confirmed); border: 1px solid rgba(168,255,62,0.25); }
+    .tier-badge.ANALYZED  { background: rgba(245,158,11,0.1); color: var(--c-analyzed);  border: 1px solid rgba(245,158,11,0.25); }
+    .tier-badge.QUALIFYING{ background: rgba(56,189,248,0.1); color: var(--c-qualifying); border: 1px solid rgba(56,189,248,0.2); }
+    .tier-badge.CONFIRMED::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--c-confirmed); box-shadow: 0 0 4px var(--c-confirmed); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    .sev-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
+    .sev-CRITICAL .sev-dot { background: var(--c-critical); }
+    .sev-HIGH .sev-dot     { background: var(--c-high); }
+    .sev-MEDIUM .sev-dot   { background: var(--c-medium); }
+    .sev-LOW .sev-dot      { background: var(--c-low); }
+    .sev-CRITICAL { color: var(--c-critical); }
+    .sev-HIGH     { color: var(--c-high); }
+    .sev-MEDIUM   { color: var(--c-medium); }
+    .sev-LOW      { color: var(--c-low); }
+
+    .pkg-cell {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--text-primary);
+      max-width: 180px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .eco-chip {
+      font-size: 10px; font-weight: 500;
+      padding: 2px 6px; border-radius: 4px;
+      background: rgba(148,163,184,0.07);
+      color: var(--text-muted);
+      border: 1px solid rgba(148,163,184,0.1);
+      white-space: nowrap;
+    }
+    .id-cell {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-muted);
+    }
+    .tag-cell { display: flex; flex-wrap: wrap; gap: 4px; max-width: 200px; }
+    .tag-sm {
+      font-size: 9px; padding: 1px 6px; border-radius: 3px;
+      background: rgba(148,163,184,0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(148,163,184,0.07);
+    }
+
+    /* ── Rationale expand ──────────────────────────────────── */
+    .rationale-cell {
+      max-width: 300px; color: var(--text-secondary); font-size: 11px;
+      line-height: 1.5;
+    }
+    .rationale-short {
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .rationale-toggle {
+      font-size: 10px; color: var(--text-muted);
+      cursor: pointer; margin-top: 4px;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    .rationale-toggle:hover { color: var(--text-secondary); }
+    .rationale-full { display: none; }
+    .rationale-full.open { display: block; }
+
+    @media (max-width: 900px) {
+      .stat-row { grid-template-columns: repeat(2, 1fr); }
+      .funnel-grid { grid-template-columns: repeat(3, 1fr); }
+      .funnel-col:nth-child(4), .funnel-col:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M9 2L4 7l5 5"/>
+        </svg>
+        VulnFeed
+      </a>
+      <span style="color:var(--text-muted);font-size:14px;">/</span>
+      <span class="header-title">Pipeline Metrics</span>
+      <div class="header-spacer"></div>
+      <span class="updated-label" id="updatedLabel">—</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrapper">
+      <div class="page-body">
+
+        <!-- Funnel + stat cards -->
+        <div>
+          <p class="section-title">Discovery Funnel</p>
+          <div class="funnel-grid" id="funnelGrid"></div>
+          <div class="clone-strip" id="cloneStrip" style="display:none"></div>
+        </div>
+
+        <div class="stat-row" id="statRow"></div>
+
+        <!-- Rejection breakdown -->
+        <div>
+          <p class="section-title">Rejection Reasons</p>
+          <div class="reject-list" id="rejectList"></div>
+        </div>
+
+        <!-- Pipeline table -->
+        <div>
+          <p class="section-title">Passed Qualification (<span id="passedCount">—</span>)</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Severity</th>
+                  <th>Package</th>
+                  <th>Eco</th>
+                  <th>ID</th>
+                  <th>Tags</th>
+                  <th>Qualification rationale</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Funnel ─────────────────────────────────────────────────────
+    const FUNNEL_STEPS = [
+      { key: "discovered",  label: "Discovered",  color: "rgba(100,116,139,0.35)" },
+      { key: "qualified",   label: "Qualified",   color: "rgba(56,189,248,0.4)"  },
+      { key: "passed",      label: "Passed",      color: "rgba(168,99,255,0.5)"  },
+      { key: "analyzed",    label: "Analyzed",    color: "rgba(245,158,11,0.55)" },
+      { key: "confirmed",   label: "PoC Confirmed",color: "rgba(168,255,62,0.6)" },
+    ];
+
+    function renderFunnel(funnel) {
+      const max = funnel.discovered;
+      const grid = document.getElementById('funnelGrid');
+      grid.innerHTML = FUNNEL_STEPS.map(step => {
+        const val = funnel[step.key];
+        const pct = (val / max * 100).toFixed(2);
+        const barH = Math.max(4, Math.round(val / max * 120));
+        return `
+          <div class="funnel-col">
+            <div class="funnel-col-value">${val.toLocaleString()}</div>
+            <div class="funnel-col-pct">${pct}%</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar" style="height:${barH}px;background:${step.color};" title="${step.label}: ${val}"></div>
+            </div>
+            <div class="funnel-col-label">${step.label}</div>
+          </div>`;
+      }).join('');
+    }
+
+    // ── Clone-qualify strip ─────────────────────────────────────────
+    const CLONE_STEPS = [
+      { key: "discovered", label: "Discovered" },
+      { key: "passed",     label: "Passed" },
+      { key: "analyzed",   label: "Analyzed" },
+      { key: "confirmed",  label: "PoC Confirmed" },
+    ];
+
+    function renderCloneStrip(cq) {
+      if (!cq || !cq.discovered) return;
+      const strip = document.getElementById('cloneStrip');
+      strip.style.display = '';
+      const base = cq.discovered;
+      strip.innerHTML = CLONE_STEPS.map(s => {
+        const val = cq[s.key] ?? 0;
+        const pct = base > 0 ? (val / base * 100).toFixed(0) : 0;
+        return `
+          <div class="clone-col">
+            <div class="clone-col-value">${val.toLocaleString()}</div>
+            <div class="clone-col-label">${s.label}</div>
+            <div class="clone-col-pct">${pct}% of clones</div>
+          </div>`;
+      }).join('');
+    }
+
+    // ── Stat cards ──────────────────────────────────────────────────
+    function renderStats(funnel, rejections) {
+      const totalRejected = Object.values(rejections).reduce((a,b) => a+b, 0);
+      const passRate = ((funnel.passed / funnel.qualified) * 100).toFixed(0);
+      const snr = Math.round(funnel.discovered / Math.max(funnel.confirmed, 1));
+      const stats = [
+        { label: "Pass Rate",      value: `${passRate}%`,             sub: `${funnel.passed} of ${funnel.qualified} qualified` },
+        { label: "Rejected",       value: totalRejected,              sub: "after qualification" },
+        { label: "Signal/Noise",   value: `1 : ${snr}`,              sub: "candidates per confirmed PoC" },
+        { label: "Queue Depth",    value: funnel.passed - funnel.confirmed, sub: "awaiting PoC validation" },
+      ];
+      document.getElementById('statRow').innerHTML = stats.map(s => `
+        <div class="stat-card">
+          <div class="stat-card-label">${s.label}</div>
+          <div class="stat-card-value">${s.value}</div>
+          <div class="stat-card-sub">${s.sub}</div>
+        </div>`).join('');
+    }
+
+    // ── Rejection breakdown ─────────────────────────────────────────
+    const REJECT_LABELS = {
+      "existing-poc":  "Public PoC exists",
+      "pure-dos":      "Pure DoS only",
+      "out-of-scope":  "Out of scope",
+      "not-actionable":"Not actionable",
+    };
+
+    function renderRejections(reasons) {
+      const max = Math.max(...Object.values(reasons));
+      const list = document.getElementById('rejectList');
+      list.innerHTML = Object.entries(reasons).map(([key, count]) => `
+        <div class="reject-row">
+          <span class="reject-key">${escHtml(REJECT_LABELS[key] || key)}</span>
+          <div class="reject-bar-wrap">
+            <div class="reject-bar" style="width:${(count/max*100).toFixed(1)}%"></div>
+          </div>
+          <span class="reject-count">${count}</span>
+        </div>`).join('');
+    }
+
+    // ── Pipeline table ──────────────────────────────────────────────
+    const TIER_ICON = { CONFIRMED: '●', ANALYZED: '◑', QUALIFYING: '○' };
+
+    function renderTable(entries) {
+      document.getElementById('passedCount').textContent = entries.length;
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = entries.map((e, i) => {
+        const ids = [...(e.cve_ids || []), ...(e.ghsa_ids || []), ...(e.osv_ids || [])];
+        const mainId = ids[0] || '—';
+        const rationale = e.qualification_rationale || '';
+        const tags = (e.tags || []).slice(0, 4);
+        return `
+          <tr>
+            <td>
+              <span class="tier-badge ${e.poc_status}">${TIER_ICON[e.poc_status] || ''} ${e.poc_status}</span>
+              ${e.clone_of ? `<span class="clone-badge" title="Clone of ${escHtml(e.clone_of)}">CLONE</span>` : ''}
+            </td>
+            <td><span class="sev-${e.severity}" style="display:inline-flex;align-items:center;font-size:11px;font-weight:500;">
+              <span class="sev-dot"></span>${e.severity}
+            </span></td>
+            <td><div class="pkg-cell" title="${escHtml(e.package)}">${escHtml(e.package)}</div></td>
+            <td><span class="eco-chip">${escHtml(e.ecosystem || '—')}</span></td>
+            <td><span class="id-cell">${escHtml(mainId)}</span></td>
+            <td><div class="tag-cell">${tags.map(t => `<span class="tag-sm">${escHtml(t)}</span>`).join('')}</div></td>
+            <td class="rationale-cell">
+              ${rationale ? `
+                <div class="rationale-short" id="rs-${i}">${escHtml(rationale.slice(0, 160))}${rationale.length > 160 ? '…' : ''}</div>
+                ${rationale.length > 160 ? `
+                  <div class="rationale-full" id="rf-${i}">${escHtml(rationale)}</div>
+                  <div class="rationale-toggle" onclick="toggleRationale(${i})">show more</div>
+                ` : ''}
+              ` : '<span style="color:var(--text-muted)">—</span>'}
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function toggleRationale(i) {
+      const short = document.getElementById(`rs-${i}`);
+      const full  = document.getElementById(`rf-${i}`);
+      const toggle = short.nextElementSibling?.nextElementSibling || short.nextElementSibling;
+      const isOpen = full.classList.toggle('open');
+      short.style.display = isOpen ? 'none' : '';
+      // find the toggle button
+      const btn = document.querySelector(`[onclick="toggleRationale(${i})"]`);
+      if (btn) btn.textContent = isOpen ? 'show less' : 'show more';
+    }
+
+    // ── Bootstrap ────────────────────────────────────────────────────
+    fetch('metrics.json')
+      .then(r => r.json())
+      .then(m => {
+        document.getElementById('updatedLabel').textContent =
+          'Generated ' + new Date(m.generated_at).toLocaleDateString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+        renderFunnel(m.funnel);
+        renderCloneStrip(m.funnel.clone_qualify);
+        renderStats(m.funnel, m.rejection_reasons);
+        renderRejections(m.rejection_reasons);
+        renderTable(m.entries);
+      })
+      .catch(err => {
+        document.querySelector('.page-body').innerHTML =
+          `<div style="color:var(--text-muted);padding:60px 0;text-align:center;">
+            Failed to load metrics.json. Serve over HTTP: <code>python3 -m http.server</code>
+          </div>`;
+        console.error(err);
+      });
+  </script>
+</body>
+</html>

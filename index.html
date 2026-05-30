@@ -218,12 +218,12 @@
     }
     .artifact-chip {
       font-family: var(--font-mono); font-size: 11px;
-      color: var(--accent); background: rgba(168,255,62,0.08);
-      border: 1px solid rgba(168,255,62,0.2);
+      color: rgba(168,255,62,0.45); background: rgba(168,255,62,0.04);
+      border: 1px solid rgba(168,255,62,0.1);
       padding: 5px 14px; border-radius: 3px; letter-spacing: 0.04em;
     }
     .hero-consumer {
-      font-size: 13px; color: var(--text-secondary);
+      font-size: 14px; color: rgba(148,163,184,0.75);
       margin: 0 0 42px; text-align: center; line-height: 1.6;
     }
     .hero-consumer strong { color: var(--text-primary); }
@@ -464,6 +464,17 @@
       border-top-color: rgba(148,163,184,0.15);
     }
     .poc-badge:hover .tooltip { opacity: 1; }
+
+    /* ── Clone badge ─────────────────────────────────────────── */
+    .clone-badge {
+      display: inline-flex; align-items: center;
+      font-family: var(--font-mono);
+      font-size: 9px; font-weight: 600; letter-spacing: 0.07em;
+      padding: 3px 7px; border-radius: 4px;
+      background: rgba(168,99,255,0.1); color: rgba(200,160,255,0.85);
+      border: 1px solid rgba(168,99,255,0.25);
+      white-space: nowrap;
+    }
 
     /* ── Card body ────────────────────────────────────────────── */
     .card-pkg {
@@ -834,13 +845,15 @@
       <!-- Hero -->
       <section class="hero">
         <p class="hero-eyebrow">Live Exploit Intelligence</p>
-        <h1>Fresh exploits.<br><em>Every hours.</em></h1>
+        <h1>Fresh exploits.<br><em>Every hour.</em></h1>
         <p class="hero-sub">Live feed of <em>generated</em>, validated <em>proofs-of-concept</em> for <em>1-day</em> vulnerabilities.</p>
 
         <div class="artifact-strip">
           <span class="artifact-chip">&lt;&gt;&nbsp; exploit.py</span>
           <span class="artifact-chip">&#9655;&nbsp; Dockerfile playground</span>
-          <span class="artifact-chip">&#10056;&nbsp; YARA &middot; Sigma signatures</span>
+          <span class="artifact-chip">&#10056;&nbsp; Sigma signature</span>
+          <span class="artifact-chip">&#9881;&nbsp; Metasploit</span>
+          <span class="artifact-chip">&#9673;&nbsp; Nuclei</span>
         </div>
         <p class="hero-consumer">Feed your <strong>detection engineers</strong>, <strong>red teams</strong>, <strong>vuln management</strong>, and <strong>AI/ML security models</strong> — real exploit behavior, on day one.</p>
 
@@ -1043,6 +1056,7 @@
         <div class="card-top">
           <span class="badge sev-badge" data-severity="${escHtml(entry.severity)}">${escHtml(entry.severity)}</span>
           <span class="badge eco-badge" data-eco="${escHtml(entry.ecosystem)}">${escHtml(entry.ecosystem)}</span>
+          ${entry.clone_of ? `<span class="clone-badge" title="Clone of ${escHtml(entry.clone_of)}">CLONE</span>` : ''}
           <div class="badge-spacer"></div>
           <span class="poc-badge" tabindex="0">
             PoC Confirmed
