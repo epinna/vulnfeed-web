@@ -274,7 +274,12 @@ def process_entry(entry_dir: Path) -> dict | None:
         analysis_desc = ""
     teaser = analysis_desc if analysis_desc else extract_teaser(data, title)
 
-    return {
+    # clone_of lives in stub.json even when discovery.json is primary
+    stub_data = json.loads(stub_path.read_text()) if stub_path.exists() else {}
+    clone_of         = stub_data.get("clone_of") or data.get("clone_of") or None
+    clone_source_url = stub_data.get("clone_source_url") or data.get("clone_source_url") or None
+
+    entry: dict = {
         "id":           entry_dir.name,
         "title":        title,
         "teaser":       teaser,
@@ -292,6 +297,10 @@ def process_entry(entry_dir: Path) -> dict | None:
         "tags":         infer_tags(data),
         "references":   build_refs(data, disc),
     }
+    if clone_of:
+        entry["clone_of"]         = clone_of
+        entry["clone_source_url"] = clone_source_url
+    return entry
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main() -> None:
@@ -340,6 +349,13 @@ def main() -> None:
 
     totals = {t: sum(1 for e in all_entries if e["poc_status"] == t)
               for t in ("CONFIRMED", "ANALYZED", "QUALIFYING")}
+    clone_totals = {t: sum(1 for e in all_entries if e["poc_status"] == t and e.get("clone_of"))
+                    for t in ("CONFIRMED", "ANALYZED", "QUALIFYING")}
+    total_clone_stubs = sum(
+        1 for d in research.iterdir()
+        if d.is_dir() and (d / "stub.json").exists()
+        and json.loads((d / "stub.json").read_text()).get("clone_of")
+    )
 
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -380,20 +396,30 @@ def main() -> None:
             "passed":      totals["CONFIRMED"] + totals["ANALYZED"] + totals["QUALIFYING"],
             "analyzed":    totals["CONFIRMED"] + totals["ANALYZED"],
             "confirmed":   totals["CONFIRMED"],
+            "clone_qualify": {
+                "discovered": total_clone_stubs,
+                "passed":     sum(clone_totals.values()),
+                "analyzed":   clone_totals["CONFIRMED"] + clone_totals["ANALYZED"],
+                "confirmed":  clone_totals["CONFIRMED"],
+            },
         },
         "rejection_reasons": dict(sorted(rejection_reasons.items(), key=lambda x: -x[1])),
         "entries": metrics_entries,
     }
     args.metrics_out.write_text(json.dumps(metrics, indent=2, ensure_ascii=False))
 
+    clone_passed   = sum(clone_totals.values())
+    clone_analyzed = clone_totals["CONFIRMED"] + clone_totals["ANALYZED"]
     print(f"feed.json    → {args.out}  ({totals['CONFIRMED']} CONFIRMED entries)")
     print(f"metrics.json → {args.metrics_out}  ({len(all_entries)} total entries)")
-    print(f"  CONFIRMED  {totals['CONFIRMED']}")
-    print(f"  ANALYZED   {totals['ANALYZED']}")
-    print(f"  QUALIFYING {totals['QUALIFYING']}")
+    print(f"  CONFIRMED  {totals['CONFIRMED']}  (clone: {clone_totals['CONFIRMED']})")
+    print(f"  ANALYZED   {totals['ANALYZED']}  (clone: {clone_totals['ANALYZED']})")
+    print(f"  QUALIFYING {totals['QUALIFYING']}  (clone: {clone_totals['QUALIFYING']})")
     print(f"  funnel: {total_dirs} discovered → {total_qualified} qualified → "
           f"{totals['CONFIRMED']+totals['ANALYZED']+totals['QUALIFYING']} passed → "
           f"{totals['CONFIRMED']} confirmed")
+    print(f"  clone-qualify: {total_clone_stubs} discovered → {clone_passed} passed → "
+          f"{clone_analyzed} analyzed → {clone_totals['CONFIRMED']} confirmed")
 
 
 if __name__ == "__main__":
