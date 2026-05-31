@@ -64,17 +64,88 @@ def ecosystem_from(data: dict) -> str:
     return PLATFORM_ECO.get(data.get("platform", ""), "Unknown")
 
 # ── Pipeline tier ──────────────────────────────────────────────────────────────
+# Maps canonical status (lib/status.py) → display tier.
+# Inlined here to avoid a cross-repo import (vulnfeed/ and sub-zero-days/ are siblings).
+_STATUS_TO_TIER = {
+    "confirmed":       "CONFIRMED",
+    "sandbox-aborted": "ANALYZED",
+    "not-triggered":   "ANALYZED",
+    "analyzed":        "ANALYZED",
+    "analysis-aborted":"QUALIFYING",
+    "qualified":       "QUALIFYING",
+}
+
+def _parse_outcome_status(entry_dir: Path) -> str:
+    """Return the lowercase status string from outcome.md, or ''."""
+    import re
+    path = entry_dir / "outcome.md"
+    if not path.exists():
+        return ""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception:
+        return ""
+    # YAML frontmatter
+    fm = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
+    if fm:
+        for line in fm.group(1).splitlines():
+            m = re.match(r"^status:\s*(.+)", line.strip(), re.IGNORECASE)
+            if m:
+                return m.group(1).strip().lower()
+    # Markdown bullets and table rows
+    for line in text.splitlines():
+        ll = line.lower()
+        bm = re.search(r"\*\*status[^*]*:?\*\*:?\s*([^\n|*`]+)", ll)
+        if bm:
+            return bm.group(1).strip()
+        tm = re.match(r"\|\s*status\s*\|\s*([^|]+)", ll)
+        if tm:
+            return tm.group(1).strip()
+    return ""
+
+
 def pipeline_tier(entry_dir: Path) -> str | None:
-    """Return the highest pipeline tier reached, or None to skip entirely."""
-    if (entry_dir / "sandbox" / "Dockerfile").exists():
-        return "CONFIRMED"
-    if (entry_dir / "analysis.json").exists():
+    """Return the display tier (CONFIRMED/ANALYZED/QUALIFYING) or None to skip.
+
+    Fast path: reads status.json written by each skill.
+    Fallback: derives tier from artifact presence with correct partial-state handling:
+    - Partial sandbox (Dockerfile present, run_poc.sh or README.md missing)
+      → ANALYZED, not CONFIRMED.
+    - Partial analysis (only one of analysis.json / analysis.md)
+      → QUALIFYING, not ANALYZED.
+    - outcome.md with 'aborted' at analysis tier → QUALIFYING (previous state).
+    """
+    # Fast path: status.json
+    status_path = entry_dir / "status.json"
+    if status_path.exists():
+        try:
+            s = json.loads(status_path.read_text())
+            status = s.get("status", "")
+            if status in _STATUS_TO_TIER:
+                return _STATUS_TO_TIER[status]
+            if status in ("rejected", "deferred", "stub"):
+                return None
+        except Exception:
+            pass  # fall through to artifact inference
+
+    # Fallback: derive from artifacts
+    out_status = _parse_outcome_status(entry_dir)
+
+    sandbox = entry_dir / "sandbox"
+    if (sandbox / "Dockerfile").exists():
+        if (sandbox / "run_poc.sh").exists() and (sandbox / "README.md").exists():
+            return "CONFIRMED"
+        # Partial sandbox: fall through to analysis check
+
+    if (entry_dir / "analysis.json").exists() and (entry_dir / "analysis.md").exists():
+        if "aborted" in out_status:
+            return "QUALIFYING"
         return "ANALYZED"
+
     disc = entry_dir / "discovery.json"
     if disc.exists():
         d = json.loads(disc.read_text())
-        q = d.get("qualification", {})
-        if q.get("result") == "passed":
+        if d.get("qualification", {}).get("result") == "passed":
             return "QUALIFYING"
     return None
 
