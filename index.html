@@ -311,7 +311,10 @@
     }
     .pricing-period {
       font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+    }
+    .pricing-persona {
+      font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;
     }
     .pricing-price {
       display: flex; align-items: flex-start; gap: 2px;
@@ -324,6 +327,18 @@
       font-size: 12px; color: var(--text-muted); margin-bottom: 24px;
     }
     hr.pricing-divider { border: none; border-top: 1px solid var(--card-border); margin: 4px 0 20px; }
+    .credit-callout {
+      display: flex; align-items: baseline; gap: 8px;
+      background: rgba(168,255,62,0.04); border: 1px solid rgba(168,255,62,0.1);
+      border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 20px;
+    }
+    .credit-num {
+      font-family: var(--font-mono); font-size: 28px; font-weight: 500;
+      color: var(--accent); letter-spacing: -1px; line-height: 1;
+    }
+    .credit-label {
+      font-size: 12px; color: var(--text-secondary); line-height: 1.4;
+    }
     .feature-list {
       list-style: none; display: flex; flex-direction: column; gap: 10px;
       margin-bottom: auto; padding-bottom: 28px;
@@ -510,43 +525,49 @@
     <div class="section-header">
       <p class="section-label">Pricing</p>
       <h2 class="section-title">Simple, transparent pricing</h2>
-      <p class="pricing-sub">All PoC metadata is public. Exploit code and sandbox environments require a subscription.</p>
+      <p class="pricing-sub">Metadata is always free. Pay only for the exploit code and sandbox you actually use.</p>
     </div>
     <div class="pricing-grid">
 
       <div class="pricing-card">
-        <div class="pricing-period">Monthly</div>
+        <div class="pricing-period">Starter</div>
+        <div class="pricing-persona">For offensive security teams</div>
         <div class="pricing-price">
           <span class="pricing-price-sup">$</span>
-          <span class="pricing-price-main">200</span>
+          <span class="pricing-price-main">500</span>
         </div>
-        <div class="pricing-note">per month &middot; cancel anytime</div>
+        <div class="pricing-note">per year &middot; 50 exploit credits</div>
         <hr class="pricing-divider">
+        <div class="credit-callout">
+          <span class="credit-num">50</span>
+          <span class="credit-label">exploit unlocks · use any time during the year</span>
+        </div>
         <ul class="feature-list">
-          <li>Full exploit code for every confirmed PoC</li>
-          <li>Verified Docker / sandbox environments</li>
-          <li>New entries within 24h of disclosure</li>
-          <li>JSON feed API access</li>
-          <li>12-month archive access</li>
+          <li>Browse the full feed metadata — free, always</li>
+          <li>Spend a credit to unlock exploit code + sandbox</li>
+          <li>Pick exactly what matters for your engagements</li>
+          <li>Verified Docker environment per unlock</li>
+          <li>Credits valid for 12 months</li>
         </ul>
         <a class="pricing-cta" href="#">Get access →</a>
       </div>
 
       <div class="pricing-card recommended">
-        <span class="rec-badge">Best value</span>
-        <div class="pricing-period">Annual</div>
+        <span class="rec-badge">Full access</span>
+        <div class="pricing-period">Team</div>
+        <div class="pricing-persona">For threat intel &amp; detection teams</div>
         <div class="pricing-price">
           <span class="pricing-price-sup">$</span>
-          <span class="pricing-price-main">1,800</span>
+          <span class="pricing-price-main">5,000</span>
         </div>
-        <div class="pricing-note">per year &middot; save 25% vs monthly</div>
+        <div class="pricing-note">per year &middot; unlimited access</div>
         <hr class="pricing-divider">
         <ul class="feature-list">
-          <li>Full exploit code for every confirmed PoC</li>
-          <li>Verified Docker / sandbox environments</li>
+          <li>Unlimited exploit code &amp; sandbox access</li>
+          <li>Complete 12-month archive, no gaps</li>
+          <li>JSON feed API — machine-readable, pipeline-ready</li>
           <li>New entries within 24h of disclosure</li>
-          <li>JSON feed API access</li>
-          <li>12-month archive access</li>
+          <li>Verified Docker environments for every PoC</li>
           <li>Priority support</li>
         </ul>
         <a class="pricing-cta" href="#">Get access →</a>
@@ -597,7 +618,7 @@
         <span class="sev-dot" data-severity="${escHtml(entry.severity)}"></span>
         <span class="row-eco" data-eco="${escHtml(entry.ecosystem)}">${escHtml(entry.ecosystem)}</span>
         <span class="row-pkg">${escHtml(entry.package)}</span>
-        <span class="row-title">${escHtml(entry.title || entry.teaser || '')}</span>
+        <span class="row-title">${escHtml(entry.impact || '')}</span>
         <span class="row-date">${escHtml(relativeTime(entry.discovered_at))}</span>
         ${fmtStars(entry.repo_stars)}
         <div class="row-tags">${tagsHtml}</div>

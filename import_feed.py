@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-import_feed.py  — build feed.json + metrics.json from sub-zero-days research.
+import_feed.py  — build feed.json + metrics.json from vulnfeed research.
 
 feed.json    — only CONFIRMED entries (sandbox/Dockerfile present) for the
                public-facing VulnFeed page.
@@ -10,7 +10,7 @@ metrics.json — full pipeline view: funnel stats, rejection breakdown, and all
 
 Usage:
   ./import_feed.py                    # writes both files next to this script
-  ./import_feed.py --research /path/to/sub-zero-days/research
+  ./import_feed.py --research /path/to/vulnfeed/research
   ./import_feed.py --out feed.json --metrics-out metrics.json
 """
 
@@ -22,7 +22,7 @@ from pathlib import Path
 
 # ── Default paths ──────────────────────────────────────────────────────────────
 SCRIPT_DIR   = Path(__file__).parent
-RESEARCH_DIR = SCRIPT_DIR.parent / "sub-zero-days" / "research"
+RESEARCH_DIR = SCRIPT_DIR.parent / "vulnfeed" / "research"
 OUT_FILE     = SCRIPT_DIR / "feed.json"
 
 # ── Severity mapping ───────────────────────────────────────────────────────────
@@ -335,9 +335,12 @@ def process_entry(entry_dir: Path) -> dict | None:
     # Prefer the structured attacker-centric description from analysis.json
     # (written by vuln-analysis, polished by poc-sandbox) over scraped advisory text.
     analysis_path = entry_dir / "analysis.json"
+    impact = ""
     if analysis_path.exists():
         try:
-            analysis_desc = json.loads(analysis_path.read_text()).get("description", "")
+            analysis = json.loads(analysis_path.read_text())
+            analysis_desc = analysis.get("description", "")
+            impact = (analysis.get("attacker_model") or {}).get("impact", "")
         except Exception:
             analysis_desc = ""
     else:
@@ -356,6 +359,7 @@ def process_entry(entry_dir: Path) -> dict | None:
         "id":           entry_dir.name,
         "title":        title,
         "teaser":       teaser,
+        "impact":       impact,
         "package":      data.get("project_name", entry_dir.name),
         "ecosystem":    ecosystem_from(data),
         "severity":     severity,
@@ -381,7 +385,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--research",     type=Path, default=RESEARCH_DIR, help="Path to sub-zero-days/research/")
+    parser.add_argument("--research",     type=Path, default=RESEARCH_DIR, help="Path to vulnfeed/research/")
     parser.add_argument("--out",          type=Path, default=OUT_FILE,              help="Output feed.json (CONFIRMED only)")
     parser.add_argument("--metrics-out",  type=Path, default=SCRIPT_DIR / "metrics.json", help="Output metrics.json (all tiers)")
     args = parser.parse_args()

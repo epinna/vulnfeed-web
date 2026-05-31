@@ -1,13 +1,229 @@
 {
-  "generated_at": "2026-05-31T14:53:49+00:00",
+  "generated_at": "2026-05-31T19:35:38+00:00",
   "pipeline": "sub-zero-days/0.1",
   "total_candidates_analyzed": 2648,
-  "confirmed_pocs": 11,
+  "confirmed_pocs": 22,
   "entries": [
+    {
+      "id": "apache-airflow-cve-2026-45361",
+      "title": "PYSEC-2026-166",
+      "teaser": "A not authenticated remote attacker with network position on the path between an Airflow worker and a GCE instance could exploit this missing host key verification to intercept and modify the SSH session, gaining full man-in-the-middle access to all traffic exchanged during the connection.",
+      "impact": "Full man-in-the-middle interception of the SSH session.",
+      "package": "apache-airflow-providers-google",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45361"
+      ],
+      "ghsa_ids": [],
+      "osv_ids": [
+        "PYSEC-2026-166"
+      ],
+      "fixed_in": [
+        "22.0.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 45632,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/apache/airflow",
+          "label": "airflow"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/apache/airflow/pull/66746",
+          "label": "66746"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-166",
+          "label": "PYSEC-2026-166"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://dailycve.com/apache-airflow-providers-google-ssh-host-key-verification-disabled-cve-2026-45361-critical/",
+          "label": ""
+        },
+        {
+          "kind": "advisory",
+          "url": "https://cve.threatint.eu/CVE/CVE-2026-45361",
+          "label": "CVE-2026-45361"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/apache/airflow/commit/954b3035cc8feb6ef1e13a6715b7c7e47d12932a",
+          "label": "Fix commit · 954b3035cc"
+        }
+      ]
+    },
+    {
+      "id": "mlflow-mlflow-cve-2026-2393",
+      "title": "MLflow Has a Server-Side Request Forgery (SSRF) Vulnerability",
+      "teaser": "An unauthenticated remote attacker could exploit this missing URL validation to force the server to issue HTTP requests to internal hosts or cloud metadata endpoints and obtain sensitive data or access internal services.",
+      "impact": "SSRF — attacker-controlled outbound HTTP requests from the MLflow server to arbitrary destinations, including loopback, RFC-1918 private ranges, and cloud metadata endpoints (169.254.169.254).",
+      "package": "mlflow",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-2393"
+      ],
+      "ghsa_ids": [
+        "GHSA-65h7-c7c4-mghx"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.9.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 26212,
+      "tags": [
+        "rce",
+        "ssrf",
+        "credential-theft",
+        "webhook"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/mlflow/mlflow",
+          "label": "mlflow"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/mlflow/mlflow/commit/64aa0ab7207f9c649b59ba1a5f40d82196817389",
+          "label": "Fix commit · 64aa0ab720"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-65h7-c7c4-mghx",
+          "label": "GHSA-65h7-c7c4-mghx"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://mlflow.org/docs/latest/self-hosting/security/basic-http-auth",
+          "label": "basic-http-auth"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://www.google.com/search?q=CVE-2026-2393+MLflow+SSRF+PoC",
+          "label": "search?q=CVE-2026-2393+MLflow+SSRF+PoC"
+        }
+      ]
+    },
+    {
+      "id": "ludwig-ai-ludwig-cve-2026-31237",
+      "title": "Ludwig framework is vulnerable to insecure deserialization through its predict() method.",
+      "teaser": "An unauthenticated remote attacker could exploit this insecure deserialization vulnerability to supply a malicious dataset file and execute arbitrary commands on the server, achieving unauthenticated remote code execution.",
+      "impact": "Unauthenticated RCE — arbitrary OS command execution in the Ludwig server/worker process.",
+      "package": "ludwig",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31237"
+      ],
+      "ghsa_ids": [
+        "GHSA-wcr3-gm9f-f87q"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 11708,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/ludwig-ai/ludwig",
+          "label": "ludwig"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-wcr3-gm9f-f87q",
+          "label": "GHSA-wcr3-gm9f-f87q"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-wcr3-gm9f-f87q",
+          "label": "GHSA-wcr3-gm9f-f87q"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/ludwig-ai/ludwig/commit/5003d760d08ec0fb052b44da2e81b4d076b5524c",
+          "label": "Fix commit · 5003d760d0"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-31237",
+          "label": "CVE-2026-31237"
+        }
+      ]
+    },
+    {
+      "id": "ludwig-ai-ludwig-cve-2026-31238",
+      "title": "Ludwig framework is vulnerable to insecure deserialization in its model serving component",
+      "teaser": "An unauthenticated local attacker could exploit this insecure deserialization to cause arbitrary operating system commands to execute when a victim operator loads a maliciously crafted model file, achieving remote code execution on the system running the model server.",
+      "impact": "Arbitrary code execution on the host.",
+      "package": "ludwig",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31238"
+      ],
+      "ghsa_ids": [
+        "GHSA-xp5q-5q7g-q26r"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 11708,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/ludwig-ai/ludwig",
+          "label": "ludwig"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-xp5q-5q7g-q26r",
+          "label": "GHSA-xp5q-5q7g-q26r"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-xp5q-5q7g-q26r",
+          "label": "GHSA-xp5q-5q7g-q26r"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/ludwig-ai/ludwig/commit/5003d760d08e",
+          "label": "Fix commit · 5003d760d0"
+        }
+      ]
+    },
     {
       "id": "horovod-horovod-cve-2026-31234",
       "title": "Horovod contains an insecure deserialization vulnerability in its KVStore HTTP server component",
       "teaser": "An not authenticated remote attacker could exploit this insecure deserialization to inject a malicious cloudpickle payload into the KVStore server and execute arbitrary code on every worker process that reads from the store, achieving unauthenticated remote code execution.",
+      "impact": "Unauthenticated remote code execution on every Horovod worker process, with the same OS privileges as the worker.",
       "package": "horovod",
       "ecosystem": "PyPI",
       "severity": "CRITICAL",
@@ -62,9 +278,186 @@
       ]
     },
     {
+      "id": "vercel-turborepo-cve-2026-45772",
+      "title": "Turbo: Unexpected local code execution during Yarn Berry detection",
+      "teaser": "An unauthenticated local attacker could exploit this untrusted-search-path vulnerability to place a malicious script inside a repository and have it executed automatically when any Turborepo command runs, achieving arbitrary code execution on the developer or CI host.",
+      "impact": "Arbitrary code execution on the victim's machine under the victim's user account.",
+      "package": "@turbo/codemod",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45772"
+      ],
+      "ghsa_ids": [
+        "GHSA-3qcw-2rhx-2726"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.9.14"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 30476,
+      "tags": [
+        "supply-chain",
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/vercel/turborepo/security/advisories/GHSA-3qcw-2rhx-2726",
+          "label": "GHSA-3qcw-2rhx-2726"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-3qcw-2rhx-2726",
+          "label": "GHSA-3qcw-2rhx-2726"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45772",
+          "label": "CVE-2026-45772"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://wp-firewall.com/critical-npm-turbo-workspaces-vulnerability-discovered-published-on-2026-05-20-cve-2026-45772-2/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/vercel/turborepo/commit/fc62fe0d9c347d1d24f0ed8946284856593ddb93",
+          "label": "Fix commit · fc62fe0d9c"
+        }
+      ]
+    },
+    {
+      "id": "vercel-turborepo-cve-2026-45773",
+      "title": "Trubo: Login callback CSRF/session fixation",
+      "teaser": "A not authenticated remote attacker could exploit this missing CSRF state validation to inject an attacker-controlled authentication token into a victim developer turbo CLI session and redirect all subsequent remote cache traffic to attacker-controlled infrastructure.",
+      "impact": "Session fixation / credential injection — build artifacts are exfiltrated to attacker-controlled remote cache infrastructure.",
+      "package": "turbo",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45773"
+      ],
+      "ghsa_ids": [
+        "GHSA-hcf7-66rw-9f5r"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.9.14"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 30476,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "credential-theft"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/vercel/turborepo",
+          "label": "turborepo"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/vercel/turborepo/security/advisories/GHSA-hcf7-66rw-9f5r",
+          "label": "GHSA-hcf7-66rw-9f5r"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-hcf7-66rw-9f5r",
+          "label": "GHSA-hcf7-66rw-9f5r"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://cvereports.com/reports/CVE-2026-45773",
+          "label": "CVE-2026-45773"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45773",
+          "label": "CVE-2026-45773"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/vercel/turborepo/commit/84f450894e87da1eed864d51f6f637f26980d560",
+          "label": "Fix commit · 84f450894e"
+        }
+      ]
+    },
+    {
+      "id": "jupyterlab-jupyterlab-cve-2026-42266",
+      "title": "JupyterLab has an Extension Manager API/GUI Policy Discrepancy, allowing 3rd party (malicious) extensions install via POST request",
+      "teaser": "An authenticated remote attacker could exploit this missing server-side input validation to install an arbitrary package from an attacker-controlled source by supplying a VCS URL or filesystem path as the extension name, achieving code execution in the JupyterLab server process.",
+      "impact": "Arbitrary package installation leading to remote code execution in the JupyterLab server process.",
+      "package": "jupyterlab",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-42266"
+      ],
+      "ghsa_ids": [
+        "GHSA-37w4-hwhx-4rc4"
+      ],
+      "osv_ids": [
+        "PYSEC-2026-164"
+      ],
+      "fixed_in": [
+        "4.5.7"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 15172,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "multi-tenant"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/jupyterlab/jupyterlab/security/advisories/GHSA-37w4-hwhx-4rc4",
+          "label": "GHSA-37w4-hwhx-4rc4"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-37w4-hwhx-4rc4",
+          "label": "GHSA-37w4-hwhx-4rc4"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/1de120b5fe52f1148b45ca6ccbb03754e259b792",
+          "label": "Fix commit · 1de120b5fe"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://jupyterlab.readthedocs.io/en/stable/user/extensions.html#listing-configuration",
+          "label": "extensions.html#listing-configuration"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/f51404192bf6d0ff79187c884f21e1f91b928146",
+          "label": "Fix commit · f51404192b"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-164",
+          "label": "PYSEC-2026-164"
+        }
+      ]
+    },
+    {
       "id": "parse-community-parse-server-cve-2026-47248",
       "title": "Parse Server's GraphQL \"Did you mean ...?\" validation suggestions disclose schema to unauthenticated callers",
       "teaser": "An unauthenticated caller with only the public application ID can iteratively reconstruct Parse Server's GraphQL schema by sending misspelled queries and reading 'Did you mean X?' suggestions in validation errors, bypassing the IntrospectionControlPlugin that guards against standard introspection queries.",
+      "impact": "Schema metadata disclosure — reconstruction of class, field, argument, and mutation names despite introspection being disabled.",
       "package": "parse-server",
       "ecosystem": "npm",
       "severity": "CRITICAL",
@@ -116,9 +509,151 @@
       ]
     },
     {
+      "id": "cli-cli-cve-2026-48501",
+      "title": "GitHub CLI has an incorrect authorization header in API requests to TUF repository mirrors via `gh attestation`, `gh release verify`, and `gh release verify-asset` commands",
+      "teaser": "An unauthenticated remote attacker could exploit this exposure of sensitive information to intercept the victim's GitHub authentication token transmitted to non-API hosts and gain access to repositories, organization resources, and enterprise systems.",
+      "impact": "GitHub authentication token theft; depending on token scope, the stolen token may grant read/write access to private repositories, organization administration, and GHES enterprise access.",
+      "package": "github.com/cli/cli/v2",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-48501"
+      ],
+      "ghsa_ids": [
+        "GHSA-8xvp-7hj6-mcj9"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.93.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 44660,
+      "tags": [],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/cli/cli",
+          "label": "cli"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-8xvp-7hj6-mcj9",
+          "label": "GHSA-8xvp-7hj6-mcj9"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/cli/cli/commit/f96972ce1c11fdb8eaa556257fde962a363dffde",
+          "label": "Fix commit · f96972ce1c"
+        }
+      ]
+    },
+    {
+      "id": "mlflow-mlflow-cve-2026-2614",
+      "title": "MLflow allows an unauthenticated remote attacker to read arbitrary files from the server's filesystem",
+      "teaser": "An unauthenticated remote attacker could exploit this path traversal to read arbitrary files from the MLflow server's filesystem, gaining access to secrets, credentials, and configuration data without any authorization.",
+      "impact": "Unauthenticated arbitrary file read — any file readable by the MLflow server process.",
+      "package": "mlflow",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-2614"
+      ],
+      "ghsa_ids": [
+        "GHSA-42h5-h8qh-vv9v"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.10.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 26212,
+      "tags": [
+        "rce",
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "commit",
+          "url": "https://github.com/mlflow/mlflow/commit/6e801f4259d96804c73107315b24cef0f6aa115a",
+          "label": "Fix commit · 6e801f4259"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-j59j-cxhg-g2r5",
+          "label": "GHSA-j59j-cxhg-g2r5"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://huntr.com/bounties/mlflow-cve-2026-2614",
+          "label": "mlflow-cve-2026-2614"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-42h5-h8qh-vv9v",
+          "label": "GHSA-42h5-h8qh-vv9v"
+        }
+      ]
+    },
+    {
+      "id": "opencti-platform-opencti-cve-2026-44730",
+      "title": "OpenCTI: Privilege escalation via graphQL API is abusable by organization admins, due to incorrect ACL on userEdit relationAdd",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to enroll any platform user in their organization and gain org-admin control over that user's API token, achieving full platform access equivalent to a platform administrator.",
+      "impact": "Privilege escalation from organization admin to platform admin, gaining full platform access including all data and configuration.",
+      "package": "pycti",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-44730"
+      ],
+      "ghsa_ids": [
+        "GHSA-q537-qhj4-wcjx"
+      ],
+      "osv_ids": [
+        "PYSEC-2026-167"
+      ],
+      "fixed_in": [
+        "6.9.7"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 9488,
+      "tags": [
+        "rce",
+        "privilege-escalation"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/OpenCTI-Platform/opencti",
+          "label": "opencti"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-q537-qhj4-wcjx",
+          "label": "GHSA-q537-qhj4-wcjx"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/OpenCTI-Platform/opencti/commit/97ca75ecb6b12751c5269d8bc868d65e3a2d705f",
+          "label": "Fix commit · 97ca75ecb6"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-167",
+          "label": "PYSEC-2026-167"
+        }
+      ]
+    },
+    {
       "id": "mervinpraison-praisonai-cve-2026-47416",
       "title": "praisonai-platform: Any workspace member can promote themselves or others to owner via PATCH /workspaces/{id}/members/{user_id}",
       "teaser": "An authenticated remote attacker could exploit this missing authorization check to promote their own role to workspace owner, gaining full control over all workspace resources and members.",
+      "impact": "Privilege escalation to workspace owner, with full control over all workspace resources.",
       "package": "praisonai-platform",
       "ecosystem": "PyPI",
       "severity": "CRITICAL",
@@ -171,6 +706,7 @@
       "id": "mervinpraison-praisonai-cve-2026-47410",
       "title": "praisonai-platform: JWT signing key defaults to hardcoded \"dev-secret-change-me\", allowing token forgery for any user when PLATFORM_ENV is unset",
       "teaser": "An unauthenticated remote attacker could exploit this hard-coded JWT signing secret to forge valid authentication tokens for any user, gaining full access to all workspaces, issues, and projects on the platform.",
+      "impact": "Complete authentication bypass — authenticate as any platform user, including workspace owners and admins, gaining full control over all their workspaces, issues, and projects.",
       "package": "praisonai-platform",
       "ecosystem": "PyPI",
       "severity": "CRITICAL",
@@ -219,6 +755,7 @@
       "id": "mervinpraison-praisonai-cve-2026-48169",
       "title": "PraisonAI has Cross-Workspace IDOR and Privilege Escalation via Platform API",
       "teaser": "An authenticated remote attacker could exploit this missing authorization check to read, modify, and delete issues and projects in any workspace, gaining cross-workspace read and write access.",
+      "impact": "Cross-workspace IDOR — read, modify, and delete issues and projects in any workspace.",
       "package": "praisonai-platform",
       "ecosystem": "PyPI",
       "severity": "CRITICAL",
@@ -274,6 +811,7 @@
       "id": "dask-distributed-cve-2026-23528",
       "title": "Dask Distributed is Vulnerable to Remote Code Execution via Jupyter Proxy and Dashboard",
       "teaser": "An not authenticated remote attacker could exploit this reflected cross-site scripting vulnerability to inject and execute arbitrary JavaScript in the victim's browser via the Dask dashboard error page, and when the dashboard is accessed through the Jupyter Lab proxy this escalates to arbitrary Python code execution on the victim's machine via the Jupyter kernel API.",
+      "impact": "Reflected XSS escalating to unauthenticated remote code execution on the victim's machine.",
       "package": "distributed",
       "ecosystem": "PyPI",
       "severity": "CRITICAL",
@@ -332,9 +870,54 @@
       ]
     },
     {
+      "id": "getarcaneapp-arcane-cve-2026-47179",
+      "title": "Arcane Has an Authenticated Arbitrary Host File Read via Docker Compose Include Directives",
+      "teaser": "An authenticated remote attacker could exploit this path traversal to plant a project with a directory-traversal include directive and read back the contents of any file accessible to the backend process, gaining access to credentials, configuration secrets, and sensitive system files stored on the server.",
+      "impact": "Arbitrary read of any file readable by the Arcane backend process on the Docker host, escalating to credential theft and host-level RCE.",
+      "package": "github.com/getarcaneapp/arcane/backend",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47179"
+      ],
+      "ghsa_ids": [
+        "GHSA-c3px-h233-h6fq"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "1.19.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 5631,
+      "tags": [
+        "sqli",
+        "credential-theft"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/getarcaneapp/arcane",
+          "label": "arcane"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c3px-h233-h6fq",
+          "label": "GHSA-c3px-h233-h6fq"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/getarcaneapp/arcane/commit/b6cbffabf61dbc3f12a28d3b5830e3c6b7e67daf",
+          "label": "Fix commit · b6cbffabf6"
+        }
+      ]
+    },
+    {
       "id": "q00-ouroboros-cve-2026-47211",
       "title": "ouroboros-ai Vulnerable to Remote Code Execution via Untrusted Project-Directory .env",
       "teaser": "An unauthenticated remote attacker could exploit this unsafe environment variable resolution to execute arbitrary code on any developer who clones and runs the project, gaining execution with the victim's OS privileges.",
+      "impact": "Arbitrary code execution on the victim's machine with the victim's OS privileges.",
       "package": "ouroboros-ai",
       "ecosystem": "PyPI",
       "severity": "CRITICAL",
@@ -378,6 +961,7 @@
       "id": "decidim-decidim-cve-2026-40869",
       "title": "Decidim amendments can be accepted or rejected by anyone",
       "teaser": "An authenticated remote attacker could exploit this missing authorization check to accept or reject any proposal amendment regardless of ownership, gaining unauthorized co-authorship over proposals they do not own.",
+      "impact": "Authorization bypass — accept or reject amendments on any proposal regardless of ownership, with coauthorship escalation.",
       "package": "decidim-core",
       "ecosystem": "RubyGems",
       "severity": "CRITICAL",
@@ -421,6 +1005,7 @@
       "id": "openclaw-openclaw-cve-2026-45002",
       "title": "OpenClaw: Hook mapping templates could bypass hook session-key opt-in",
       "teaser": "An authenticated remote attacker could exploit this authorization bypass to hijack any agent session by routing webhook requests to an arbitrary session key, gaining access to another session's context and queued actions.",
+      "impact": "Authorization bypass — hijack any agent session, taking over its context and queued actions.",
       "package": "openclaw",
       "ecosystem": "npm",
       "severity": "MEDIUM",
@@ -470,6 +1055,7 @@
       "id": "katalyst-koi-cve-2026-44511",
       "title": "katalyst-koi: Session cookies can be replayed after user logout",
       "teaser": "An authenticated remote attacker who has captured a valid admin session cookie could exploit this insufficient session expiration to replay the cookie after logout, gaining persistent admin access to the application.",
+      "impact": "Session replay after logout — full admin access on the target Koi application.",
       "package": "katalyst-koi",
       "ecosystem": "RubyGems",
       "severity": "CRITICAL",
@@ -513,6 +1099,7 @@
       "id": "openc3-cosmos-cve-2026-42085",
       "title": "OpenC3 COSMOS allows arbitrary writes to plugins directory via path-traversed config filenames",
       "teaser": "An authenticated remote attacker could exploit this path traversal to write arbitrary files to the server filesystem, overwriting plugin configurations or creating files outside their intended directory scope.",
+      "impact": "Arbitrary file write to paths under and adjacent to the /plugins volume — overwriting plugin configs and target definitions, or creating files outside the intended volume.",
       "package": "openc3",
       "ecosystem": "RubyGems",
       "severity": "CRITICAL",
