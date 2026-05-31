@@ -1,0 +1,561 @@
+{
+  "generated_at": "2026-05-31T14:53:49+00:00",
+  "pipeline": "sub-zero-days/0.1",
+  "total_candidates_analyzed": 2648,
+  "confirmed_pocs": 11,
+  "entries": [
+    {
+      "id": "horovod-horovod-cve-2026-31234",
+      "title": "Horovod contains an insecure deserialization vulnerability in its KVStore HTTP server component",
+      "teaser": "An not authenticated remote attacker could exploit this insecure deserialization to inject a malicious cloudpickle payload into the KVStore server and execute arbitrary code on every worker process that reads from the store, achieving unauthenticated remote code execution.",
+      "package": "horovod",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31234"
+      ],
+      "ghsa_ids": [
+        "GHSA-mf8f-x4r3-jm8c"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 14696,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/http/http_server.py",
+          "label": "http_server.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/common/util/codec.py",
+          "label": "codec.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/http/http_client.py",
+          "label": "http_client.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/run_task.py",
+          "label": "run_task.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/elastic/rendezvous.py",
+          "label": "rendezvous.py"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-mf8f-x4r3-jm8c",
+          "label": "GHSA-mf8f-x4r3-jm8c"
+        }
+      ]
+    },
+    {
+      "id": "parse-community-parse-server-cve-2026-47248",
+      "title": "Parse Server's GraphQL \"Did you mean ...?\" validation suggestions disclose schema to unauthenticated callers",
+      "teaser": "An unauthenticated caller with only the public application ID can iteratively reconstruct Parse Server's GraphQL schema by sending misspelled queries and reading 'Did you mean X?' suggestions in validation errors, bypassing the IntrospectionControlPlugin that guards against standard introspection queries.",
+      "package": "parse-server",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47248"
+      ],
+      "ghsa_ids": [
+        "GHSA-8cph-rgr4-g5vj"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "8.6.78",
+        "9.9.1-alpha.2"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 21391,
+      "tags": [
+        "rce",
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/parse-community/parse-server",
+          "label": "parse-server"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-8cph-rgr4-g5vj",
+          "label": "GHSA-8cph-rgr4-g5vj"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/parse-community/parse-server/pull/10467",
+          "label": "10467"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/parse-community/parse-server/pull/10468",
+          "label": "10468"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/parse-community/parse-server/commit/828d0e0e456074a128245a6af95d5ee53ca0f695",
+          "label": "Fix commit · 828d0e0e45"
+        }
+      ]
+    },
+    {
+      "id": "mervinpraison-praisonai-cve-2026-47416",
+      "title": "praisonai-platform: Any workspace member can promote themselves or others to owner via PATCH /workspaces/{id}/members/{user_id}",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to promote their own role to workspace owner, gaining full control over all workspace resources and members.",
+      "package": "praisonai-platform",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47416"
+      ],
+      "ghsa_ids": [
+        "GHSA-c2m8-4gcg-v22g"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 8013,
+      "tags": [
+        "privilege-escalation"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI",
+          "label": "PraisonAI"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c2m8-4gcg-v22g",
+          "label": "GHSA-c2m8-4gcg-v22g"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/search?q=CVE-2026-47416",
+          "label": "search?q=CVE-2026-47416"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/search?q=GHSA-c2m8-4gcg-v22g",
+          "label": "search?q=GHSA-c2m8-4gcg-v22g"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/MervinPraison/PraisonAI/commit/b707fd0b27fb405ca03b9a210d6dcb0540774b1a",
+          "label": "Fix commit · b707fd0b27"
+        }
+      ]
+    },
+    {
+      "id": "mervinpraison-praisonai-cve-2026-47410",
+      "title": "praisonai-platform: JWT signing key defaults to hardcoded \"dev-secret-change-me\", allowing token forgery for any user when PLATFORM_ENV is unset",
+      "teaser": "An unauthenticated remote attacker could exploit this hard-coded JWT signing secret to forge valid authentication tokens for any user, gaining full access to all workspaces, issues, and projects on the platform.",
+      "package": "praisonai-platform",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47410"
+      ],
+      "ghsa_ids": [
+        "GHSA-3qg8-5g3r-79v5"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 8013,
+      "tags": [
+        "rce",
+        "cryptography"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI",
+          "label": "PraisonAI"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-3qg8-5g3r-79v5",
+          "label": "GHSA-3qg8-5g3r-79v5"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-3qg8-5g3r-79v5",
+          "label": "GHSA-3qg8-5g3r-79v5"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/MervinPraison/PraisonAI/commit/b707fd0b27fb405ca03b9a210d6dcb0540774b1a",
+          "label": "Fix commit · b707fd0b27"
+        }
+      ]
+    },
+    {
+      "id": "mervinpraison-praisonai-cve-2026-48169",
+      "title": "PraisonAI has Cross-Workspace IDOR and Privilege Escalation via Platform API",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to read, modify, and delete issues and projects in any workspace, gaining cross-workspace read and write access.",
+      "package": "praisonai-platform",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-48169"
+      ],
+      "ghsa_ids": [
+        "GHSA-gv23-xrm3-8c62"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 8013,
+      "tags": [
+        "rce",
+        "idor",
+        "privilege-escalation",
+        "multi-tenant"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI",
+          "label": "PraisonAI"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-gv23-xrm3-8c62",
+          "label": "GHSA-gv23-xrm3-8c62"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-gv23-xrm3-8c62",
+          "label": "GHSA-gv23-xrm3-8c62"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/cyberdudebivash/cyberdudebivash-blog",
+          "label": "cyberdudebivash-blog"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/MervinPraison/PraisonAI/commit/b707fd0b27fb405ca03b9a210d6dcb0540774b1a",
+          "label": "Fix commit · b707fd0b27"
+        }
+      ]
+    },
+    {
+      "id": "dask-distributed-cve-2026-23528",
+      "title": "Dask Distributed is Vulnerable to Remote Code Execution via Jupyter Proxy and Dashboard",
+      "teaser": "An not authenticated remote attacker could exploit this reflected cross-site scripting vulnerability to inject and execute arbitrary JavaScript in the victim's browser via the Dask dashboard error page, and when the dashboard is accessed through the Jupyter Lab proxy this escalates to arbitrary Python code execution on the victim's machine via the Jupyter kernel API.",
+      "package": "distributed",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-23528"
+      ],
+      "ghsa_ids": [
+        "GHSA-c336-7962-wfj2"
+      ],
+      "osv_ids": [
+        "PYSEC-2026-169"
+      ],
+      "fixed_in": [
+        "2026.1.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 1670,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "xss"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/dask/distributed",
+          "label": "distributed"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c336-7962-wfj2",
+          "label": "GHSA-c336-7962-wfj2"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-169",
+          "label": "PYSEC-2026-169"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-23528",
+          "label": "CVE-2026-23528"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://dailycve.com/dask-distributed-cross-side-scripting-xss-cve-2026-23528-medium/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/dask/distributed/commit/ab72092a8a938923c2bb51a2cd14ca26614827fa",
+          "label": "Fix commit · ab72092a8a"
+        }
+      ]
+    },
+    {
+      "id": "q00-ouroboros-cve-2026-47211",
+      "title": "ouroboros-ai Vulnerable to Remote Code Execution via Untrusted Project-Directory .env",
+      "teaser": "An unauthenticated remote attacker could exploit this unsafe environment variable resolution to execute arbitrary code on any developer who clones and runs the project, gaining execution with the victim's OS privileges.",
+      "package": "ouroboros-ai",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47211"
+      ],
+      "ghsa_ids": [
+        "GHSA-c4m7-2gwp-vw76"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.39.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 4368,
+      "tags": [
+        "supply-chain",
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/Q00/ouroboros",
+          "label": "ouroboros"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c4m7-2gwp-vw76",
+          "label": "GHSA-c4m7-2gwp-vw76"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/Q00/ouroboros/commit/4e70b760b4eb157469b58645339ba831f6513d37",
+          "label": "Fix commit · 4e70b760b4"
+        }
+      ]
+    },
+    {
+      "id": "decidim-decidim-cve-2026-40869",
+      "title": "Decidim amendments can be accepted or rejected by anyone",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to accept or reject any proposal amendment regardless of ownership, gaining unauthorized co-authorship over proposals they do not own.",
+      "package": "decidim-core",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-40869"
+      ],
+      "ghsa_ids": [
+        "GHSA-w5xj-99cg-rccm"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.30.5",
+        "0.31.1"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 1758,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/decidim/decidim",
+          "label": "decidim"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-w5xj-99cg-rccm",
+          "label": "GHSA-w5xj-99cg-rccm"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/decidim/decidim/commit/1b99136a1c7aa02616a0b54a6ab88d12907a57a9",
+          "label": "Fix commit · 1b99136a1c"
+        }
+      ]
+    },
+    {
+      "id": "openclaw-openclaw-cve-2026-45002",
+      "title": "OpenClaw: Hook mapping templates could bypass hook session-key opt-in",
+      "teaser": "An authenticated remote attacker could exploit this authorization bypass to hijack any agent session by routing webhook requests to an arbitrary session key, gaining access to another session's context and queued actions.",
+      "package": "openclaw",
+      "ecosystem": "npm",
+      "severity": "MEDIUM",
+      "cve_ids": [
+        "CVE-2026-45002"
+      ],
+      "ghsa_ids": [
+        "GHSA-2xcp-x87w-q377"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2026.4.20"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T16:47:50+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 375808,
+      "tags": [
+        "auth-bypass",
+        "injection",
+        "webhook"
+      ],
+      "references": [
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-2xcp-x87w-q377",
+          "label": "GHSA-2xcp-x87w-q377"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/openclaw/openclaw/security/advisories/GHSA-2xcp-x87w-q377",
+          "label": "GHSA-2xcp-x87w-q377"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/openclaw/openclaw",
+          "label": "openclaw"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/openclaw/openclaw/commit/5275d008ed33203dba3f98e969ad683a65c416c3",
+          "label": "Fix commit · 5275d008ed"
+        }
+      ]
+    },
+    {
+      "id": "katalyst-koi-cve-2026-44511",
+      "title": "katalyst-koi: Session cookies can be replayed after user logout",
+      "teaser": "An authenticated remote attacker who has captured a valid admin session cookie could exploit this insufficient session expiration to replay the cookie after logout, gaining persistent admin access to the application.",
+      "package": "katalyst-koi",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-44511"
+      ],
+      "ghsa_ids": [
+        "GHSA-4cx3-3c38-j9vv"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "4.20.0",
+        "5.6.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 9,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/katalyst/koi",
+          "label": "koi"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-4cx3-3c38-j9vv",
+          "label": "GHSA-4cx3-3c38-j9vv"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/katalyst/koi/commit/1b179c30cb2d0641e5f0f007594849dc34bd6fba",
+          "label": "Fix commit · 1b179c30cb"
+        }
+      ]
+    },
+    {
+      "id": "openc3-cosmos-cve-2026-42085",
+      "title": "OpenC3 COSMOS allows arbitrary writes to plugins directory via path-traversed config filenames",
+      "teaser": "An authenticated remote attacker could exploit this path traversal to write arbitrary files to the server filesystem, overwriting plugin configurations or creating files outside their intended directory scope.",
+      "package": "openc3",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-42085"
+      ],
+      "ghsa_ids": [
+        "GHSA-4jvx-93h3-f45h"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "6.10.5",
+        "7.0.0-rc3"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 223,
+      "tags": [
+        "path-traversal"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/OpenC3/cosmos",
+          "label": "cosmos"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-4jvx-93h3-f45h",
+          "label": "GHSA-4jvx-93h3-f45h"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/OpenC3/cosmos/blob/main/openc3/lib/openc3/utilities/local_mode.rb",
+          "label": "local_mode.rb"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/OpenC3/cosmos/commit/e6efccbd148ba0e3361c5891027f2373aa140d42",
+          "label": "Fix commit · e6efccbd14"
+        }
+      ]
+    }
+  ]
+}

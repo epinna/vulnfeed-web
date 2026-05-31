@@ -1,0 +1,2371 @@
+{
+  "generated_at": "2026-05-31T14:53:49+00:00",
+  "pipeline": "sub-zero-days/0.1",
+  "funnel": {
+    "discovered": 2648,
+    "qualified": 1751,
+    "passed": 42,
+    "analyzed": 41,
+    "confirmed": 11,
+    "clone_qualify": {
+      "discovered": 0,
+      "passed": 0,
+      "analyzed": 0,
+      "confirmed": 0
+    }
+  },
+  "rejection_reasons": {
+    "not-actionable": 953,
+    "out-of-scope": 671,
+    "existing-poc": 49,
+    "pure-dos": 24
+  },
+  "entries": [
+    {
+      "id": "horovod-horovod-cve-2026-31234",
+      "title": "Horovod contains an insecure deserialization vulnerability in its KVStore HTTP server component",
+      "teaser": "An not authenticated remote attacker could exploit this insecure deserialization to inject a malicious cloudpickle payload into the KVStore server and execute arbitrary code on every worker process that reads from the store, achieving unauthenticated remote code execution.",
+      "package": "horovod",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31234"
+      ],
+      "ghsa_ids": [
+        "GHSA-mf8f-x4r3-jm8c"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 14696,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/http/http_server.py",
+          "label": "http_server.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/common/util/codec.py",
+          "label": "codec.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/http/http_client.py",
+          "label": "http_client.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/run_task.py",
+          "label": "run_task.py"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/horovod/horovod/blob/master/horovod/runner/elastic/rendezvous.py",
+          "label": "rendezvous.py"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-mf8f-x4r3-jm8c",
+          "label": "GHSA-mf8f-x4r3-jm8c"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo is public (14,695 stars, not archived) and freely cloneable. Q2: Horovod is pip-installable on Linux; the KVStore HTTP server component is pure Python (http.server / socketserver) and can be exercised in isolation without GPU/MPI infrastructure. Q3 Step 0: verbatim_excerpt contains only a description of the vulnerability pattern — no PoC header and no runnable exploit+confirmation output. Q3 Step 1: Web search for CVE-2026-31234/GHSA-mf8f-x4r3-jm8c returned no public PoC repos or exploit write-ups. Q4: KVStoreServer binds to all interfaces (addr=('', port)) with no authentication or authorization. read_data_from_kvstore in run_task.py calls codec.loads_base64() → cloudpickle.loads() on the raw HTTP response with no integrity check. An attacker who can reach the driver's random ephemeral port can PUT a malicious cloudpickle payload; any worker that GETs it will execute arbitrary code. No auth required, no non-default config required — the run_func execution path is a core Horovod API usage. Q5: The KVStore HTTP server is a network-facing component (TCP server on all interfaces) that directly accepts untrusted HTTP input, classifying this as standalone.",
+      "fix_commit_shas": []
+    },
+    {
+      "id": "parse-community-parse-server-cve-2026-47248",
+      "title": "Parse Server's GraphQL \"Did you mean ...?\" validation suggestions disclose schema to unauthenticated callers",
+      "teaser": "An unauthenticated caller with only the public application ID can iteratively reconstruct Parse Server's GraphQL schema by sending misspelled queries and reading 'Did you mean X?' suggestions in validation errors, bypassing the IntrospectionControlPlugin that guards against standard introspection queries.",
+      "package": "parse-server",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47248"
+      ],
+      "ghsa_ids": [
+        "GHSA-8cph-rgr4-g5vj"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "8.6.78",
+        "9.9.1-alpha.2"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 21391,
+      "tags": [
+        "rce",
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/parse-community/parse-server",
+          "label": "parse-server"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-8cph-rgr4-g5vj",
+          "label": "GHSA-8cph-rgr4-g5vj"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/parse-community/parse-server/pull/10467",
+          "label": "10467"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/parse-community/parse-server/pull/10468",
+          "label": "10468"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/parse-community/parse-server/commit/828d0e0e456074a128245a6af95d5ee53ca0f695",
+          "label": "Fix commit · 828d0e0e45"
+        }
+      ],
+      "qualification_rationale": "Repo public and not archived. parse-server is a well-known Node.js npm package with standard Docker setup. Bug: GraphQL 'Did you mean ...?' validation-error suggestions disclose internal schema (class names, field names, mutation names) to unauthenticated callers even when graphQLPublicIntrospection: false (the default), bypassing IntrospectionControlPlugin. Attack requires mountGraphQL: true to be enabled by the operator, but does NOT require caller authentication — any unauthenticated request with a public application ID suffices. Since only one of the two disqualifying gates applies (non-default config, but not auth), the dual-gate rejection criterion is not met. No public PoC found via GitHub search on CVE-2026-47248 or GHSA-8cph-rgr4-g5vj.",
+      "fix_commit_shas": [
+        "828d0e0e456074a128245a6af95d5ee53ca0f695"
+      ]
+    },
+    {
+      "id": "mervinpraison-praisonai-cve-2026-47416",
+      "title": "praisonai-platform: Any workspace member can promote themselves or others to owner via PATCH /workspaces/{id}/members/{user_id}",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to promote their own role to workspace owner, gaining full control over all workspace resources and members.",
+      "package": "praisonai-platform",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47416"
+      ],
+      "ghsa_ids": [
+        "GHSA-c2m8-4gcg-v22g"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 8013,
+      "tags": [
+        "privilege-escalation"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI",
+          "label": "PraisonAI"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c2m8-4gcg-v22g",
+          "label": "GHSA-c2m8-4gcg-v22g"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/search?q=CVE-2026-47416",
+          "label": "search?q=CVE-2026-47416"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/search?q=GHSA-c2m8-4gcg-v22g",
+          "label": "search?q=GHSA-c2m8-4gcg-v22g"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/MervinPraison/PraisonAI/commit/b707fd0b27fb405ca03b9a210d6dcb0540774b1a",
+          "label": "Fix commit · b707fd0b27"
+        }
+      ],
+      "qualification_rationale": "Repo cloned cleanly (public, not archived). Package is praisonai-platform on PyPI with pyproject.toml build, pure-Python FastAPI/SQLAlchemy stack — straightforward pip install in debian:slim. The bug (PATCH /workspaces/{id}/members/{user_id} gated by require_workspace_member with default min_role='member' rather than owner/admin, allowing any workspace member to elevate their own role to owner in a single HTTP PATCH) is precisely described in GHSA-c2m8-4gcg-v22g; current repo shows the fix (require_workspace_admin) as expected since fixed version is 0.1.4. No public PoC found via GitHub search on CVE-2026-47416 or GHSA-c2m8-4gcg-v22g. Attack requires workspace membership (auth) but not non-default configuration — workspace membership is the default user state in the platform.",
+      "fix_commit_shas": [
+        "b707fd0b27fb405ca03b9a210d6dcb0540774b1a"
+      ]
+    },
+    {
+      "id": "mervinpraison-praisonai-cve-2026-47410",
+      "title": "praisonai-platform: JWT signing key defaults to hardcoded \"dev-secret-change-me\", allowing token forgery for any user when PLATFORM_ENV is unset",
+      "teaser": "An unauthenticated remote attacker could exploit this hard-coded JWT signing secret to forge valid authentication tokens for any user, gaining full access to all workspaces, issues, and projects on the platform.",
+      "package": "praisonai-platform",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47410"
+      ],
+      "ghsa_ids": [
+        "GHSA-3qg8-5g3r-79v5"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 8013,
+      "tags": [
+        "rce",
+        "cryptography"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI",
+          "label": "PraisonAI"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-3qg8-5g3r-79v5",
+          "label": "GHSA-3qg8-5g3r-79v5"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-3qg8-5g3r-79v5",
+          "label": "GHSA-3qg8-5g3r-79v5"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/MervinPraison/PraisonAI/commit/b707fd0b27fb405ca03b9a210d6dcb0540774b1a",
+          "label": "Fix commit · b707fd0b27"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. Package praisonai-platform on PyPI with pyproject.toml build (pure-Python, pip installable in debian:slim). Bug: JWT signing secret defaults to hardcoded 'dev-secret-change-me' when PLATFORM_JWT_SECRET is unset; the safety check is gated on PLATFORM_ENV != 'dev' but PLATFORM_ENV defaults to 'dev', so a stock deployment uses the publicly known secret. An attacker reads the literal from the public source, forges any JWT, and authenticates as any user (including workspace owners). No authentication needed — the bug bypasses auth entirely. No non-default configuration needed — this is the default state. No public PoC found: GitHub repo/code searches for CVE-2026-47410 and GHSA-3qg8-5g3r-79v5 return only advisory mirrors (opencve-kb, github/advisory-database, vuln-list-temp).",
+      "fix_commit_shas": [
+        "b707fd0b27fb405ca03b9a210d6dcb0540774b1a"
+      ]
+    },
+    {
+      "id": "mervinpraison-praisonai-cve-2026-48169",
+      "title": "PraisonAI has Cross-Workspace IDOR and Privilege Escalation via Platform API",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to read, modify, and delete issues and projects in any workspace, gaining cross-workspace read and write access.",
+      "package": "praisonai-platform",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-48169"
+      ],
+      "ghsa_ids": [
+        "GHSA-gv23-xrm3-8c62"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 8013,
+      "tags": [
+        "rce",
+        "idor",
+        "privilege-escalation",
+        "multi-tenant"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI",
+          "label": "PraisonAI"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-gv23-xrm3-8c62",
+          "label": "GHSA-gv23-xrm3-8c62"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-gv23-xrm3-8c62",
+          "label": "GHSA-gv23-xrm3-8c62"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/cyberdudebivash/cyberdudebivash-blog",
+          "label": "cyberdudebivash-blog"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/MervinPraison/PraisonAI/commit/b707fd0b27fb405ca03b9a210d6dcb0540774b1a",
+          "label": "Fix commit · b707fd0b27"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. Package praisonai-platform on PyPI with pure-Python pip install (pyproject.toml). Bug: service layer for issues and projects performs global primary-key lookups without workspace ownership checks, allowing any authenticated user to read/modify/delete resources in any workspace by supplying arbitrary resource IDs. Auth required (must be a registered user) but not non-default config — workspace isolation is expected to be the default security boundary of the platform. No public PoC found: GitHub repo/code searches for CVE-2026-48169 and GHSA-gv23-xrm3-8c62 return only advisory mirrors and one auto-generated CVE blog scraper (cyberdudebivash-blog), not a technical write-up or PoC.",
+      "fix_commit_shas": [
+        "b707fd0b27fb405ca03b9a210d6dcb0540774b1a"
+      ]
+    },
+    {
+      "id": "dask-distributed-cve-2026-23528",
+      "title": "Dask Distributed is Vulnerable to Remote Code Execution via Jupyter Proxy and Dashboard",
+      "teaser": "An not authenticated remote attacker could exploit this reflected cross-site scripting vulnerability to inject and execute arbitrary JavaScript in the victim's browser via the Dask dashboard error page, and when the dashboard is accessed through the Jupyter Lab proxy this escalates to arbitrary Python code execution on the victim's machine via the Jupyter kernel API.",
+      "package": "distributed",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-23528"
+      ],
+      "ghsa_ids": [
+        "GHSA-c336-7962-wfj2"
+      ],
+      "osv_ids": [
+        "PYSEC-2026-169"
+      ],
+      "fixed_in": [
+        "2026.1.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 1670,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "xss"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/dask/distributed",
+          "label": "distributed"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c336-7962-wfj2",
+          "label": "GHSA-c336-7962-wfj2"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-169",
+          "label": "PYSEC-2026-169"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-23528",
+          "label": "CVE-2026-23528"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://dailycve.com/dask-distributed-cross-side-scripting-xss-cve-2026-23528-medium/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/dask/distributed/commit/ab72092a8a938923c2bb51a2cd14ca26614827fa",
+          "label": "Fix commit · ab72092a8a"
+        }
+      ],
+      "qualification_rationale": "Q1: dask/distributed is a public GitHub repo (not private); shallow clone succeeded with no auth. Q2: Pure Python package installable via pip with standard dependencies (tornado, bokeh, etc.); a debian:slim Dockerfile with pip install distributed works straightforwardly. Q3: No PoC section headers or runnable exploit in advisory excerpts; web searches for CVE-2026-23528 PoC/exploit and GHSA-c336-7962-wfj2 proof-of-concept returned only advisory summaries and CVE database entries, with no working exploit code or detailed technical write-up beyond the advisory text. Q4: The attack requires no attacker credentials — it is a phishing URL attack; the non-default config (jupyter-server-proxy installed + both Jupyter and Dask running on default ports) is common among Dask users and is not an opt-in feature flag. The two requirements are not the Q4a conjunction of auth+config — there is no attacker auth requirement at all. Q5: Dask distributed runs a Tornado HTTP server exposing the dashboard on a TCP port; it is a standalone network service.",
+      "fix_commit_shas": [
+        "ab72092a8a938923c2bb51a2cd14ca26614827fa"
+      ]
+    },
+    {
+      "id": "q00-ouroboros-cve-2026-47211",
+      "title": "ouroboros-ai Vulnerable to Remote Code Execution via Untrusted Project-Directory .env",
+      "teaser": "An unauthenticated remote attacker could exploit this unsafe environment variable resolution to execute arbitrary code on any developer who clones and runs the project, gaining execution with the victim's OS privileges.",
+      "package": "ouroboros-ai",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47211"
+      ],
+      "ghsa_ids": [
+        "GHSA-c4m7-2gwp-vw76"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.39.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 4368,
+      "tags": [
+        "supply-chain",
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/Q00/ouroboros",
+          "label": "ouroboros"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c4m7-2gwp-vw76",
+          "label": "GHSA-c4m7-2gwp-vw76"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/Q00/ouroboros/commit/4e70b760b4eb157469b58645339ba831f6513d37",
+          "label": "Fix commit · 4e70b760b4"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. ouroboros-ai is a PyPI package with pip install — Docker-wrappable. Bug: ouroboros loads .env from the current working directory without sanitization; variables like OUROBOROS_CLI_PATH and OPENCODE_CLI_PATH can be hijacked to point to arbitrary executables. A malicious repo shipping a .env that overrides these variables executes attacker-controlled code when a developer runs ouroboros commands in the project directory. No auth required, no non-default config required — .env loading from CWD is the default behavior. User interaction required (clone malicious repo + run commands) but that is a CVSS UI factor, not an auth/config gate. No public PoC found via GitHub search for CVE-2026-47211 or GHSA-c4m7-2gwp-vw76.",
+      "fix_commit_shas": [
+        "4e70b760b4eb157469b58645339ba831f6513d37"
+      ]
+    },
+    {
+      "id": "decidim-decidim-cve-2026-40869",
+      "title": "Decidim amendments can be accepted or rejected by anyone",
+      "teaser": "An authenticated remote attacker could exploit this missing authorization check to accept or reject any proposal amendment regardless of ownership, gaining unauthorized co-authorship over proposals they do not own.",
+      "package": "decidim-core",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-40869"
+      ],
+      "ghsa_ids": [
+        "GHSA-w5xj-99cg-rccm"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.30.5",
+        "0.31.1"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 1758,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/decidim/decidim",
+          "label": "decidim"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-w5xj-99cg-rccm",
+          "label": "GHSA-w5xj-99cg-rccm"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/decidim/decidim/commit/1b99136a1c7aa02616a0b54a6ab88d12907a57a9",
+          "label": "Fix commit · 1b99136a1c"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. Decidim is a Ruby/Rails platform with documented Docker/docker-compose installation — installable in Debian container. Bug: any registered/authenticated user can accept or reject amendments on proposals because the permissions check in decidim-core/app/permissions/decidim/permissions.rb only verifies that amendment_reaction_enabled is true for the component (which defaults to true per component.rb in decidim-proposals), with no check that the caller is the proposal author or has admin role. Attack requires authentication (must be a registered Decidim user) but NOT non-default configuration (amendment_reaction_enabled defaults to true). Dual-gate rejection criterion not met. No public PoC found via GitHub search on CVE-2026-40869 or GHSA-w5xj-99cg-rccm.",
+      "fix_commit_shas": [
+        "1b99136a1c7aa02616a0b54a6ab88d12907a57a9"
+      ]
+    },
+    {
+      "id": "openclaw-openclaw-cve-2026-45002",
+      "title": "OpenClaw: Hook mapping templates could bypass hook session-key opt-in",
+      "teaser": "An authenticated remote attacker could exploit this authorization bypass to hijack any agent session by routing webhook requests to an arbitrary session key, gaining access to another session's context and queued actions.",
+      "package": "openclaw",
+      "ecosystem": "npm",
+      "severity": "MEDIUM",
+      "cve_ids": [
+        "CVE-2026-45002"
+      ],
+      "ghsa_ids": [
+        "GHSA-2xcp-x87w-q377"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2026.4.20"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T16:47:50+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 375808,
+      "tags": [
+        "auth-bypass",
+        "injection",
+        "webhook"
+      ],
+      "references": [
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-2xcp-x87w-q377",
+          "label": "GHSA-2xcp-x87w-q377"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/openclaw/openclaw/security/advisories/GHSA-2xcp-x87w-q377",
+          "label": "GHSA-2xcp-x87w-q377"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/openclaw/openclaw",
+          "label": "openclaw"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/openclaw/openclaw/commit/5275d008ed33203dba3f98e969ad683a65c416c3",
+          "label": "Fix commit · 5275d008ed"
+        }
+      ],
+      "qualification_rationale": "Repo cloned cleanly (public, 375k stars). openclaw is Docker-installable on Linux — the repo ships a Dockerfile, docker-compose.yml, and dedicated Docker install docs. Bug is an authorization bypass (CVSS 5.3, unauthenticated, network-accessible): templated hook-mapping sessionKey values bypass the hooks.allowRequestSessionKey opt-in gate, routing callers to arbitrary sessions. No public PoC found via web search, GitHub code search on CVE/GHSA/fix-commit, or nomi-sec tracker — the CVEReports 'exploit available' flag is not backed by any actual artifact. Advisory is purely descriptive with fix-commit only.",
+      "fix_commit_shas": [
+        "5275d008ed33203dba3f98e969ad683a65c416c3"
+      ]
+    },
+    {
+      "id": "katalyst-koi-cve-2026-44511",
+      "title": "katalyst-koi: Session cookies can be replayed after user logout",
+      "teaser": "An authenticated remote attacker who has captured a valid admin session cookie could exploit this insufficient session expiration to replay the cookie after logout, gaining persistent admin access to the application.",
+      "package": "katalyst-koi",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-44511"
+      ],
+      "ghsa_ids": [
+        "GHSA-4cx3-3c38-j9vv"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "4.20.0",
+        "5.6.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 9,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/katalyst/koi",
+          "label": "koi"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-4cx3-3c38-j9vv",
+          "label": "GHSA-4cx3-3c38-j9vv"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/katalyst/koi/commit/1b179c30cb2d0641e5f0f007594849dc34bd6fba",
+          "label": "Fix commit · 1b179c30cb"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. katalyst-koi is a RubyGems package with standard gem install — Docker-wrappable in Debian container. Bug: admin session cookies not invalidated on logout; an attacker who obtained a valid admin session cookie can continue using it after the admin logs out, until natural cookie expiry. Fix records admin logout time and rejects cookies issued before that timestamp. Auth required (must possess a valid admin session cookie — e.g. obtained via XSS, network interception, or browser theft), but NO non-default configuration required — Koi admin auth is the core purpose of the gem, enabled by default in all Koi deployments. Dual-gate rejection criterion not met. No public PoC found via GitHub code search for CVE-2026-44511 or GHSA-4cx3-3c38-j9vv.",
+      "fix_commit_shas": [
+        "1b179c30cb2d0641e5f0f007594849dc34bd6fba"
+      ]
+    },
+    {
+      "id": "openc3-cosmos-cve-2026-42085",
+      "title": "OpenC3 COSMOS allows arbitrary writes to plugins directory via path-traversed config filenames",
+      "teaser": "An authenticated remote attacker could exploit this path traversal to write arbitrary files to the server filesystem, overwriting plugin configurations or creating files outside their intended directory scope.",
+      "package": "openc3",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-42085"
+      ],
+      "ghsa_ids": [
+        "GHSA-4jvx-93h3-f45h"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "6.10.5",
+        "7.0.0-rc3"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "CONFIRMED",
+      "repo_stars": 223,
+      "tags": [
+        "path-traversal"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/OpenC3/cosmos",
+          "label": "cosmos"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-4jvx-93h3-f45h",
+          "label": "GHSA-4jvx-93h3-f45h"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/OpenC3/cosmos/blob/main/openc3/lib/openc3/utilities/local_mode.rb",
+          "label": "local_mode.rb"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/OpenC3/cosmos/commit/e6efccbd148ba0e3361c5891027f2373aa140d42",
+          "label": "Fix commit · e6efccbd14"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. OpenC3 COSMOS ships official Docker images and a committed compose.yaml — Docker-installable. Bug: save_tool_config() in local_mode.rb allows any authenticated user to create/overwrite config files at arbitrary paths within the shared /plugins directory by supplying path-traversed filenames. The guard 'return unless ENV[OPENC3_LOCAL_MODE]' is present but OPENC3_LOCAL_MODE=1 is the default in the committed .env file (Docker Compose install) — it is NOT a non-default configuration. Auth required (low privilege — any COSMOS user). Since only auth is required and not also non-default config, the dual-gate rejection criterion is not met. No public PoC found via GitHub code search for CVE-2026-42085 (only advisory mirrors and a sec-dojo description-only writeup, no exploit code).",
+      "fix_commit_shas": [
+        "e6efccbd148ba0e3361c5891027f2373aa140d42"
+      ]
+    },
+    {
+      "id": "apache-airflow-cve-2026-45361",
+      "title": "PYSEC-2026-166",
+      "teaser": "A not authenticated remote attacker with network position on the path between an Airflow worker and a GCE instance could exploit this missing host key verification to intercept and modify the SSH session, gaining full man-in-the-middle access to all traffic exchanged during the connection.",
+      "package": "apache-airflow-providers-google",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45361"
+      ],
+      "ghsa_ids": [],
+      "osv_ids": [
+        "PYSEC-2026-166"
+      ],
+      "fixed_in": [
+        "22.0.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 45632,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/apache/airflow",
+          "label": "airflow"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/apache/airflow/pull/66746",
+          "label": "66746"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-166",
+          "label": "PYSEC-2026-166"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://dailycve.com/apache-airflow-providers-google-ssh-host-key-verification-disabled-cve-2026-45361-critical/",
+          "label": ""
+        },
+        {
+          "kind": "advisory",
+          "url": "https://cve.threatint.eu/CVE/CVE-2026-45361",
+          "label": "CVE-2026-45361"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/apache/airflow/commit/954b3035cc8feb6ef1e13a6715b7c7e47d12932a",
+          "label": "Fix commit · 954b3035cc"
+        }
+      ],
+      "qualification_rationale": "Q1: Apache/airflow repo is public (45k stars, Python, not archived). Q2: apache-airflow-providers-google is pip-installable in a Debian-based Docker container. Q3 Step 0: verbatim_excerpt contains only a description with no PoC header or runnable exploit/confirmation output. Q3 Step 1: Web search for CVE-2026-45361 and PYSEC-2026-166 returned only advisory descriptions and remediation advice; no GitHub repos or write-ups with working exploits found. Q4: The vulnerable code path (ComputeEngineSSHHook._connect_to_instance) hardcodes paramiko.AutoAddPolicy unconditionally for any caller of this hook. The attacker only needs network position between the Airflow worker and the GCE VM — not an auth credential. The provider package is an explicit opt-in, but network position is not a credential; Q4 does not apply here. Q5: Apache Airflow is a standalone workflow orchestration service (scheduler + workers).",
+      "fix_commit_shas": [
+        "954b3035cc8feb6ef1e13a6715b7c7e47d12932a"
+      ]
+    },
+    {
+      "id": "mlflow-mlflow-cve-2026-2393",
+      "title": "MLflow Has a Server-Side Request Forgery (SSRF) Vulnerability",
+      "teaser": "An unauthenticated remote attacker could exploit this missing URL validation to force the server to issue HTTP requests to internal hosts or cloud metadata endpoints and obtain sensitive data or access internal services.",
+      "package": "mlflow",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-2393"
+      ],
+      "ghsa_ids": [
+        "GHSA-65h7-c7c4-mghx"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.9.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 26212,
+      "tags": [
+        "rce",
+        "ssrf",
+        "credential-theft",
+        "webhook"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/mlflow/mlflow",
+          "label": "mlflow"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/mlflow/mlflow/commit/64aa0ab7207f9c649b59ba1a5f40d82196817389",
+          "label": "Fix commit · 64aa0ab720"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-65h7-c7c4-mghx",
+          "label": "GHSA-65h7-c7c4-mghx"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://mlflow.org/docs/latest/self-hosting/security/basic-http-auth",
+          "label": "basic-http-auth"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://www.google.com/search?q=CVE-2026-2393+MLflow+SSRF+PoC",
+          "label": "search?q=CVE-2026-2393+MLflow+SSRF+PoC"
+        }
+      ],
+      "qualification_rationale": "Q1: mlflow/mlflow is public (26k stars, not private/archived). Q2: Pure Python web service installable via 'pip install mlflow' and launched with 'mlflow server'; works in a debian:slim Docker container. Q3: No PoC found — stub excerpt contains only a bug description (no exploit header or runnable exploit+confirmation); web search for CVE-2026-2393 and GHSA-65h7-c7c4-mghx returned no MLflow-specific PoC or technical write-up. Fix commit 64aa0ab confirms the issue by adding URL validation. Q4: Authentication is NOT required by default — mlflow server ships unauthenticated out of the box; --app-name basic-auth must be explicitly passed to enable auth. The _create_webhook() handler has no @_require_auth decorator; only @catch_mlflow_exception and @_disable_if_artifacts_only are present. A default-install attacker can POST to /api/2.0/mlflow/webhooks with an arbitrary url without credentials, causing the server to issue HTTP requests to attacker-controlled destinations (SSRF). Q5: Standalone Python web service deployed via 'mlflow server'.",
+      "fix_commit_shas": [
+        "64aa0ab7207f9c649b59ba1a5f40d82196817389"
+      ]
+    },
+    {
+      "id": "ludwig-ai-ludwig-cve-2026-31237",
+      "title": "Ludwig framework is vulnerable to insecure deserialization through its predict() method.",
+      "teaser": "An unauthenticated remote attacker could exploit this insecure deserialization vulnerability to supply a malicious dataset file and execute arbitrary commands on the server, achieving unauthenticated remote code execution.",
+      "package": "ludwig",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31237"
+      ],
+      "ghsa_ids": [
+        "GHSA-wcr3-gm9f-f87q"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 11708,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/ludwig-ai/ludwig",
+          "label": "ludwig"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-wcr3-gm9f-f87q",
+          "label": "GHSA-wcr3-gm9f-f87q"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-wcr3-gm9f-f87q",
+          "label": "GHSA-wcr3-gm9f-f87q"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/ludwig-ai/ludwig/commit/5003d760d08ec0fb052b44da2e81b4d076b5524c",
+          "label": "Fix commit · 5003d760d0"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-31237",
+          "label": "CVE-2026-31237"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo clones cleanly — 11,708 stars, public, Python, not archived. Q2: Pure Python ML framework, pip-installable, Docker containers documented in the repo. Q3: No PoC in verbatim_excerpt (describes mechanism only, no runnable exploit or confirmation output); web search for CVE-2026-31237 and GHSA-wcr3-gm9f-f87q returned no PoC, write-up, or working exploit — advisory itself (CVSS 9.8) explicitly notes no reproduction steps. Q4: Bug is triggered by supplying a malicious .pkl file as the dataset path argument to predict()/train()/evaluate(); pre-fix, the format_registry.py auto-dispatched .pickle/.pkl/.p extensions directly to pd.read_pickle() without validation — no auth required, no non-default config required. Q5: Ludwig ships a REST serving endpoint (ludwig server) that accepts dataset file paths over HTTP with no auth by default; CVSS vector is Network / Privileges-Required: None — classified standalone. Fix commit 5003d760d08ec0fb052b44da2e81b4d076b5524c (2026-05-17) removes pickle from auto-dispatch in format_registry.py; last affected version is v0.10.4 per the advisory (the fix is present in current HEAD at v0.17.x).",
+      "fix_commit_shas": [
+        "5003d760d08ec0fb052b44da2e81b4d076b5524c"
+      ]
+    },
+    {
+      "id": "ludwig-ai-ludwig-cve-2026-31238",
+      "title": "Ludwig framework is vulnerable to insecure deserialization in its model serving component",
+      "teaser": "A not authenticated local attacker could exploit this insecure deserialization to execute arbitrary operating system commands and achieve remote code execution on the system loading the model.",
+      "package": "ludwig",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31238"
+      ],
+      "ghsa_ids": [
+        "GHSA-xp5q-5q7g-q26r"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 11708,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/ludwig-ai/ludwig",
+          "label": "ludwig"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-xp5q-5q7g-q26r",
+          "label": "GHSA-xp5q-5q7g-q26r"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-xp5q-5q7g-q26r",
+          "label": "GHSA-xp5q-5q7g-q26r"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/ludwig-ai/ludwig/commit/5003d760d08e",
+          "label": "Fix commit · 5003d760d0"
+        }
+      ],
+      "qualification_rationale": "Q1: Public GitHub repo (11,708 stars, Apache-2.0); gh api returned full metadata with no auth challenge. Q2: pip install ludwig[serve] is well-documented; FastAPI+uvicorn stack runs cleanly in debian:slim. Q3-Step0: verbatim_excerpt is a plain vulnerability description — no PoC header, no runnable exploit, no exploitation output. Q3-Step1: web searches for CVE-2026-31238 and GHSA-xp5q-5q7g-q26r returned zero Ludwig-specific PoC repos or technical write-ups; GitHub repo search for both identifiers returned no results. Q4: ludwig serve binds 0.0.0.0:8000 by default with no authentication middleware; the model is loaded at startup from a user-supplied path. No non-default feature flag is needed — default behaviour is the vulnerable path. Neither Q4a (auth+config conjunction) nor Q4b (pre-captured credential) applies. Q5: standalone HTTP REST server (FastAPI/uvicorn, /predict + /batch_predict endpoints), default host 0.0.0.0 — receives unauthenticated network requests directly. Fix commit 5003d760d08e adds weights_only=True to torch.load() calls in ludwig/models/ecd.py (lines ~243,256 pre-fix) and ludwig/utils/checkpoint_utils.py, disabling arbitrary pickle deserialization when loading legacy .pt model files via LudwigModel.load().",
+      "fix_commit_shas": [
+        "5003d760d08e"
+      ]
+    },
+    {
+      "id": "vercel-turborepo-cve-2026-45772",
+      "title": "Turbo: Unexpected local code execution during Yarn Berry detection",
+      "teaser": "An unauthenticated local attacker could exploit this untrusted-search-path vulnerability to place a malicious script inside a repository and have it executed automatically when any Turborepo command runs, achieving arbitrary code execution on the developer or CI host.",
+      "package": "@turbo/codemod",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45772"
+      ],
+      "ghsa_ids": [
+        "GHSA-3qcw-2rhx-2726"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.9.14"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 30476,
+      "tags": [
+        "supply-chain",
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/vercel/turborepo/security/advisories/GHSA-3qcw-2rhx-2726",
+          "label": "GHSA-3qcw-2rhx-2726"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-3qcw-2rhx-2726",
+          "label": "GHSA-3qcw-2rhx-2726"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45772",
+          "label": "CVE-2026-45772"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://wp-firewall.com/critical-npm-turbo-workspaces-vulnerability-discovered-published-on-2026-05-20-cve-2026-45772-2/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/vercel/turborepo/commit/fc62fe0d9c347d1d24f0ed8946284856593ddb93",
+          "label": "Fix commit · fc62fe0d9c"
+        }
+      ],
+      "qualification_rationale": "Q1: vercel/turborepo is public (30k+ stars, not archived, no auth required to clone). Q2: Node.js CLI tool installable via 'npm install -g turbo' — works in a debian:slim Docker container. Q3 Step 0: verbatim_excerpt describes impact/workaround only; no PoC section header, no complete exploit+confirmation. Q3 Step 1: Web searches for CVE-2026-45772 PoC and GHSA-3qcw-2rhx-2726 yarnPath PoC returned only vendor advisories and news summaries; no GitHub repos with exploit code found. Q4: Victim runs 'turbo' in an attacker-controlled repo — no authentication required (repo cloning is free), no non-default config needed (yarnPath is a standard Yarn Berry feature). Only requirement is the victim runs turbo in the repo. Impact is arbitrary code execution, not pure DoS. Q5: turbo is a CLI tool invoked directly by developers/CI — standalone from the attacker's perspective.",
+      "fix_commit_shas": [
+        "fc62fe0d9c347d1d24f0ed8946284856593ddb93"
+      ]
+    },
+    {
+      "id": "vercel-turborepo-cve-2026-45773",
+      "title": "Trubo: Login callback CSRF/session fixation",
+      "teaser": "A not authenticated remote attacker could exploit this missing CSRF state validation to inject an attacker-controlled authentication token into a victim developer turbo CLI session and redirect all subsequent remote cache traffic to attacker-controlled infrastructure.",
+      "package": "turbo",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45773"
+      ],
+      "ghsa_ids": [
+        "GHSA-hcf7-66rw-9f5r"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.9.14"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 30476,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "credential-theft"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/vercel/turborepo",
+          "label": "turborepo"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/vercel/turborepo/security/advisories/GHSA-hcf7-66rw-9f5r",
+          "label": "GHSA-hcf7-66rw-9f5r"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-hcf7-66rw-9f5r",
+          "label": "GHSA-hcf7-66rw-9f5r"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://cvereports.com/reports/CVE-2026-45773",
+          "label": "CVE-2026-45773"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-45773",
+          "label": "CVE-2026-45773"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/vercel/turborepo/commit/84f450894e87da1eed864d51f6f637f26980d560",
+          "label": "Fix commit · 84f450894e"
+        }
+      ],
+      "qualification_rationale": "Q1: vercel/turborepo is publicly accessible on GitHub (30k+ stars, not private/archived). Q2: Node.js/npm CLI tool ('turbo' package); installable via npm install in a debian:slim container. Q3 Step 0: verbatim_excerpt contains no PoC section headers and no runnable exploit with confirmation output. Q3 Step 1: Web search for CVE-2026-45773 and GHSA-hcf7-66rw-9f5r found only advisory text and a conceptual description on cvereports.com — no executable exploit code, no runnable PoC with confirmation output, no GitHub repos hosting a working exploit. Q4: CSRF against a localhost OAuth callback — attacker needs victim to visit a malicious page while a 'turbo login' flow is already in progress. Does NOT require attacker authentication or non-default configuration; the callback port is opened by default during any self-hosted login flow. Only one constraint (social-engineering timing), not the dual auth+config conjunction. Q5: 'turbo' is a standalone CLI tool that opens a local HTTP server during login; it directly processes untrusted OAuth callback parameters at that server boundary — standalone deployment.",
+      "fix_commit_shas": [
+        "84f450894e87da1eed864d51f6f637f26980d560"
+      ]
+    },
+    {
+      "id": "jupyterlab-jupyterlab-cve-2026-42266",
+      "title": "JupyterLab has an Extension Manager API/GUI Policy Discrepancy, allowing 3rd party (malicious) extensions install via POST request",
+      "teaser": "An authenticated remote attacker could exploit this missing server-side input validation to install an arbitrary package from an attacker-controlled source by supplying a VCS URL or filesystem path as the extension name, achieving code execution in the JupyterLab server process.",
+      "package": "jupyterlab",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-42266"
+      ],
+      "ghsa_ids": [
+        "GHSA-37w4-hwhx-4rc4"
+      ],
+      "osv_ids": [
+        "PYSEC-2026-164"
+      ],
+      "fixed_in": [
+        "4.5.7"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 15172,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "multi-tenant"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/jupyterlab/jupyterlab/security/advisories/GHSA-37w4-hwhx-4rc4",
+          "label": "GHSA-37w4-hwhx-4rc4"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-37w4-hwhx-4rc4",
+          "label": "GHSA-37w4-hwhx-4rc4"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/1de120b5fe52f1148b45ca6ccbb03754e259b792",
+          "label": "Fix commit · 1de120b5fe"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://jupyterlab.readthedocs.io/en/stable/user/extensions.html#listing-configuration",
+          "label": "extensions.html#listing-configuration"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/jupyterlab/jupyterlab/commit/f51404192bf6d0ff79187c884f21e1f91b928146",
+          "label": "Fix commit · f51404192b"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-164",
+          "label": "PYSEC-2026-164"
+        }
+      ],
+      "qualification_rationale": "Q1: repo cloned cleanly — jupyterlab/jupyterlab is public (15k stars, not archived). Q2: pure Python/JS web app, pip-installable on debian:slim as 'jupyter lab'. Q3: no PoC in verbatim_excerpts (no exploit+confirmation), and web search for CVE-2026-42266/GHSA-37w4-hwhx-4rc4 PoC returned no exploit code — only advisory descriptions. Q4: The vulnerability has two distinct attack vectors. (a) Missing PyPI name/format validation in install(): an authenticated user can POST {cmd:install, extension_name:'git+https://github.com/attacker/evil.git'} to /lab/api/extensions, causing pip to install from an arbitrary git URL — this requires only standard authentication (normal JupyterHub/JupyterLab login), no non-default config. (b) Missing server-side allowlist enforcement (affects deployments with allowed_extensions_uris configured). Since vector (a) is exploitable with auth alone and default config, Q4a conjunction does not apply. The auth is normal account access (Q4b does not apply — no pre-captured credential needed). Q5: standalone — runs as 'jupyter lab' HTTP server on a configured port.",
+      "fix_commit_shas": [
+        "f51404192bf6d0ff79187c884f21e1f91b928146"
+      ]
+    },
+    {
+      "id": "cli-cli-cve-2026-48501",
+      "title": "GitHub CLI has an incorrect authorization header in API requests to TUF repository mirrors via `gh attestation`, `gh release verify`, and `gh release verify-asset` commands",
+      "teaser": "The gh CLI's auth token middleware calls ghauth.NormalizeHostname() which collapses tuf-repo.github.com to github.com, causing the user's GitHub auth token to be attached to TUF metadata requests. Any attacker who can observe HTTPS traffic from the victim to tuf-repo.github.com, tuf-repo-cdn.sigstore.dev, or Azure Blob Storage obtains a live GitHub authentication token granting access to repositories and organization resources.",
+      "package": "github.com/cli/cli/v2",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-48501"
+      ],
+      "ghsa_ids": [
+        "GHSA-8xvp-7hj6-mcj9"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.93.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 44660,
+      "tags": [],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/cli/cli",
+          "label": "cli"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-8xvp-7hj6-mcj9",
+          "label": "GHSA-8xvp-7hj6-mcj9"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/cli/cli/commit/f96972ce1c11fdb8eaa556257fde962a363dffde",
+          "label": "Fix commit · f96972ce1c"
+        }
+      ],
+      "qualification_rationale": "Repo public. gh CLI releases ship Linux amd64/arm64 binaries — Docker-installable from release assets. Bug: gh attestation/release verify/verify-asset incorrectly includes Authorization header in requests to TUF repository mirrors; when a redirect leads to an attacker-controlled mirror, the auth token is exfiltrated. Requires user to be authenticated with gh auth login (auth required), but NO non-default configuration — TUF mirror contacts are hardcoded and contacted automatically during normal default CLI operation. Dual-gate rejection criterion not met. No public PoC found: GitHub CVE search returns zero repos; advisory describes mechanism but provides no exploit code.",
+      "fix_commit_shas": [
+        "f96972ce1c11fdb8eaa556257fde962a363dffde"
+      ]
+    },
+    {
+      "id": "mlflow-mlflow-cve-2026-2614",
+      "title": "MLflow allows an unauthenticated remote attacker to read arbitrary files from the server's filesystem",
+      "teaser": "An unauthenticated attacker can read arbitrary files from the MLflow server's filesystem by creating a model version with the mlflow.prompt.is_prompt tag and a local filesystem path (e.g., /etc/) as the source. The pre-fix _create_model_version() handler skips source validation entirely for prompt versions. A subsequent GET /model-versions/get-artifact request serves the file from the stored source path, yielding an arbitrary file read.",
+      "package": "mlflow",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-2614"
+      ],
+      "ghsa_ids": [
+        "GHSA-42h5-h8qh-vv9v"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.10.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 26212,
+      "tags": [
+        "rce",
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "commit",
+          "url": "https://github.com/mlflow/mlflow/commit/6e801f4259d96804c73107315b24cef0f6aa115a",
+          "label": "Fix commit · 6e801f4259"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-j59j-cxhg-g2r5",
+          "label": "GHSA-j59j-cxhg-g2r5"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://huntr.com/bounties/mlflow-cve-2026-2614",
+          "label": "mlflow-cve-2026-2614"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-42h5-h8qh-vv9v",
+          "label": "GHSA-42h5-h8qh-vv9v"
+        }
+      ],
+      "qualification_rationale": "Q1: github.com/mlflow/mlflow is public, clones without auth. Q2: standard pip install mlflow works in debian:slim. Q3: No public PoC found — huntr.com advisory page inaccessible, only a Tencent YAML scanner rule found with no exploit code, no GitHub repos reproducing the bug. Q4: Default MLflow deployments require no attacker credentials; the tag mlflow.prompt.is_prompt=true bypasses source path validation for CreateModelVersion, allowing arbitrary local file read via the artifact handler, exploitable by any user with network access to the tracking server.",
+      "fix_commit_shas": [
+        "6e801f4259d96804c73107315b24cef0f6aa115a"
+      ]
+    },
+    {
+      "id": "opencti-platform-opencti-cve-2026-44730",
+      "title": "OpenCTI: Privilege escalation via graphQL API is abusable by organization admins, due to incorrect ACL on userEdit relationAdd",
+      "teaser": "An OpenCTI organization admin (VIRTUAL_ORGANIZATION_ADMIN) can add any user on the platform to their own organization by calling the userEdit.relationAdd GraphQL mutation with relationship_type='participate-to'. The pre-fix userAddRelation function uses storeLoadById — which loads the target user without checking org-admin scope — allowing the caller to target users in any organization. Once a high-privilege user is enrolled in the attacker's org, the attacker gains org-admin control over that user's API tokens and sessions, yielding full platform access.",
+      "package": "pycti",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-44730"
+      ],
+      "ghsa_ids": [
+        "GHSA-q537-qhj4-wcjx"
+      ],
+      "osv_ids": [
+        "PYSEC-2026-167"
+      ],
+      "fixed_in": [
+        "6.9.7"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 9488,
+      "tags": [
+        "rce",
+        "privilege-escalation"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/OpenCTI-Platform/opencti",
+          "label": "opencti"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-q537-qhj4-wcjx",
+          "label": "GHSA-q537-qhj4-wcjx"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/OpenCTI-Platform/opencti/commit/97ca75ecb6b12751c5269d8bc868d65e3a2d705f",
+          "label": "Fix commit · 97ca75ecb6"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-167",
+          "label": "PYSEC-2026-167"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. OpenCTI uses Docker Compose as its standard install method — Docker-installable. Bug: Organization admin can escalate to full platform access by adding higher-privileged users from other organizations to their own org via graphQL API, exploiting an incorrect ACL on userEdit relationAdd. Auth required (must hold org admin role, a standard RBAC role in opencti, not an EE feature or non-default setting). No non-default configuration required. Dual-gate rejection criterion not met. No standalone PoC repos found; OSV references advisory, NVD, and PyPI advisory only.",
+      "fix_commit_shas": [
+        "97ca75ecb6b12751c5269d8bc868d65e3a2d705f"
+      ]
+    },
+    {
+      "id": "pgadmin-org-pgadmin4-cve-2026-7819",
+      "title": " pgAdmin 4 File Manager has symbolic-link path traversal",
+      "teaser": "An authenticated remote attacker could exploit this symbolic link following vulnerability to write arbitrary file content to any path reachable by the pgAdmin process, potentially achieving code execution by overwriting sensitive system files or planting malicious content in executable paths.",
+      "package": "pgadmin4",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-7819"
+      ],
+      "ghsa_ids": [
+        "GHSA-hr4r-fwpv-c95j"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "9.15"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 3630,
+      "tags": [
+        "rce",
+        "path-traversal"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/pgadmin-org/pgadmin4/issues/9902",
+          "label": "9902"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-hr4r-fwpv-c95j",
+          "label": "GHSA-hr4r-fwpv-c95j"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/pgadmin-org/pgadmin4/commit/435752b83",
+          "label": "Fix commit · 435752b83"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://securityonline.info/pgadmin-4-critical-vulnerabilities-rce-authorization-bypass-v9-15/",
+          "label": ""
+        }
+      ],
+      "qualification_rationale": "Q1: GitHub API confirms public repo (pgadmin-org/pgadmin4), no auth required, 3630 stars. Q2: Python Flask web app; standard pip-installable package on PyPI (pgadmin4); has official Docker images; runs cleanly in debian:slim. Q3: verbatim_excerpt contains no PoC headers or runnable exploit+confirmation. Web searches for CVE-2026-7819, GHSA-hr4r-fwpv-c95j, and 'pgAdmin symlink path traversal PoC' returned only the advisory and news coverage — no public exploit code or technical write-up with step-by-step reproduction found. GitHub repo search for related PoC repos returned no results. Q4: Requires authentication (PR:L per CVSS) but File Manager is a standard built-in feature with no non-default configuration needed — Q4a conjunction not triggered. No pre-captured credential required; any normal pgAdmin user account suffices — Q4b not triggered. Q5: Standalone Flask web application serving HTTP; receives untrusted input directly at its HTTP boundary.",
+      "fix_commit_shas": []
+    },
+    {
+      "id": "pgadmin-org-pgadmin4-cve-2026-7816",
+      "title": "pgAdmin 4: OS command injection vulnerability in Import/Export query export",
+      "teaser": "An authenticated remote attacker could exploit this OS command injection to execute arbitrary operating system commands on the pgAdmin server and achieve remote code execution as the user running the pgAdmin process.",
+      "package": "pgadmin4",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-7816"
+      ],
+      "ghsa_ids": [
+        "GHSA-j74f-g7vx-fh4x"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "9.15"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 3630,
+      "tags": [
+        "injection"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/pgadmin-org/pgadmin4",
+          "label": "pgadmin4"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-j74f-g7vx-fh4x",
+          "label": "GHSA-j74f-g7vx-fh4x"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/pgadmin-org/pgadmin4/issues/9899",
+          "label": "9899"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/zzzteph/low-hanging-vulns/blob/main/nvd/2026/HIGH/CVE-2026-7816/README.md",
+          "label": "README.md"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/yarencheng/cve-devops-playground/blob/main/content/CVE-2026-7816.md",
+          "label": "CVE-2026-7816.md"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://securityonline.info/pgadmin-4-critical-vulnerabilities-rce-authorization-bypass-v9-15/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/pgadmin-org/pgadmin4/commit/13badc62c3ac985cdd0f9764af60686cdd574ac5",
+          "label": "Fix commit · 13badc62c3"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo pgadmin-org/pgadmin4 is public and freely cloneable (3630 stars, not archived, Python). Q2: Python Flask web app with official Docker images documented in the repo — Docker-installable on Linux without issue. Q3 Step 0: verbatim_excerpt contains only a description of the vulnerable pattern and fix mechanism, no PoC section header and no runnable exploit with confirmation output. Q3 Step 1: Searched for CVE-2026-7816 and GHSA-j74f-g7vx-fh4x across the web and GitHub; found only advisory reposts (zzzteph/low-hanging-vulns README, yarencheng/cve-devops-playground) that reproduce the advisory text without exploit code. CISA ADP vulnrichment tags Exploitation:none. No PoC or technical write-up found. Q4: Bug requires standard admin authentication to pgAdmin web UI (normal login — no pre-captured credential, no special opt-in config). Import/Export feature is enabled by default in a stock pgAdmin install. Auth-alone does not trigger the conjunction rule. Q5: Standalone web application — direct HTTP attack surface.",
+      "fix_commit_shas": [
+        "13badc62c3ac985cdd0f9764af60686cdd574ac5"
+      ]
+    },
+    {
+      "id": "pgadmin-org-pgadmin4-cve-2026-7817",
+      "title": "pgAdmin 4 contains local file inclusion (LFI) and server-side request forgery (SSRF) vulnerabilities",
+      "teaser": "An authenticated remote attacker could exploit this missing input validation to read arbitrary server-side files and make the server issue requests to internal network targets, gaining access to secrets stored on the host and the ability to probe internal services.",
+      "package": "pgadmin4",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-7817"
+      ],
+      "ghsa_ids": [
+        "GHSA-p58c-q354-6c4f"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "9.15"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 3630,
+      "tags": [
+        "rce",
+        "ssrf"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/pgadmin-org/pgadmin4",
+          "label": "pgadmin4"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-p58c-q354-6c4f",
+          "label": "GHSA-p58c-q354-6c4f"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-7817",
+          "label": "CVE-2026-7817"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://www.tenable.com/cve/CVE-2026-7817",
+          "label": "CVE-2026-7817"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://feedly.com/cve/CVE-2026-7817",
+          "label": "CVE-2026-7817"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/pgadmin-org/pgadmin4/issues/9900",
+          "label": "9900"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo pgadmin-org/pgadmin4 is public, 3630 stars, not archived, freely cloneable (gh api confirmed). Q2: Python Flask web app with Dockerfile present; standard pip install works in debian:slim. Q3 Step 0: verbatim_excerpt contains vulnerability description but no PoC header and no runnable exploit with confirmation output. Q3 Step 1: web search for 'CVE-2026-7817 pgAdmin4 LFI SSRF PoC exploit' returned only CVE tracker pages (NVD, Tenable, Feedly, cvefeed); no exploit/PoC repos found. GitHub repo search for CVE-2026-7817 returned zero results. Q4: Triggering requires authenticated user (any valid pgAdmin account, obtainable via normal sign-up flow in server mode) but NO non-default config: LLM_ENABLED=True is the default in config.py post-fix (line 981). Only one constraint (auth), so Q4a passes. Q4b passes: no pre-captured credential required. Q5: pgAdmin 4 is a standalone web application (Flask app accepting HTTP requests); deployment-type standalone (+0.15 boost).",
+      "fix_commit_shas": []
+    },
+    {
+      "id": "pgadmin-org-pgadmin4-cve-2026-7818",
+      "title": "pgAdmin 4 has deserialization of untrusted data in its FileBackedSessionManager",
+      "teaser": "An authenticated remote attacker could exploit this deserialization of untrusted data to plant a crafted pickle payload in the sessions directory and achieve operating-system level remote code execution under the pgAdmin process identity.",
+      "package": "pgadmin4",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-7818"
+      ],
+      "ghsa_ids": [
+        "GHSA-4rhg-h8f2-v4jm"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "9.15"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 3630,
+      "tags": [
+        "rce",
+        "deserialization"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/pgadmin-org/pgadmin4",
+          "label": "pgadmin4"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-4rhg-h8f2-v4jm",
+          "label": "GHSA-4rhg-h8f2-v4jm"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-4rhg-h8f2-v4jm",
+          "label": "GHSA-4rhg-h8f2-v4jm"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://www.rapid7.com/db/modules/exploit/multi/http/pgadmin_session_deserialization/",
+          "label": ""
+        },
+        {
+          "kind": "advisory",
+          "url": "https://www.sentinelone.com/vulnerability-database/cve-2026-7818/",
+          "label": ""
+        },
+        {
+          "kind": "advisory",
+          "url": "https://securityonline.info/pgadmin-4-critical-vulnerabilities-rce-authorization-bypass-v9-15/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/pgadmin-org/pgadmin4/commit/30a8903374f936415ac4933dc0507eeb5e1baa43",
+          "label": "Fix commit · 30a8903374"
+        }
+      ],
+      "qualification_rationale": "Q1: gh api repos/pgadmin-org/pgadmin4 confirms public repo, 3630 stars, Python, not archived, freely cloneable. Q2: Python Flask web app with pip-installable requirements and official Docker image; trivially installable in a debian:slim container. Q3 Step 0: verbatim_excerpt contains no PoC section header and no runnable exploit with confirmation output. Q3 Step 1: Rapid7 Metasploit module pgadmin_session_deserialization targets an older variant (CVE-2024-2044, tested up to 8.3) -- no confirmed Metasploit module for CVE-2026-7818 specifically; GHSA-4rhg-h8f2-v4jm advisory contains no PoC; no public write-up with reproduction steps found for this specific CVE. Q4: Fix commit 30a8903374f936415ac4933dc0507eeb5e1baa43 shows FileBackedSessionManager.get() called pickle.load() before HMAC check; exploitation requires an authenticated user to place a malicious pickle file in the sessions directory, achievable via misconfiguration OR by chaining with the co-fixed symlink path traversal (CVE-2026-7815) in file_manager -- which is accessible to any authenticated user. Auth alone is required (no non-default config gate needed when chaining); Q4b does not apply since no pre-captured credential is needed beyond normal account access. Q5: pgAdmin 4 is a standalone PostgreSQL admin web application.",
+      "fix_commit_shas": [
+        "30a8903374f936415ac4933dc0507eeb5e1baa43"
+      ]
+    },
+    {
+      "id": "cure53-dompurify-80abef9e",
+      "title": "DOMPurify USE_PROFILES prototype pollution allows event handlers",
+      "teaser": "A not authenticated remote attacker could exploit this prototype pollution enabling sanitizer bypass to inject event handler attributes into sanitized HTML output and achieve DOM-based cross-site scripting in any application that uses the affected library with USE_PROFILES enabled.",
+      "package": "dompurify",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [],
+      "ghsa_ids": [
+        "GHSA-cj63-jhhr-wcxv",
+        "GHSA-cjmm-f4jc-qw8r"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.3.2"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 17051,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/cure53/DOMPurify",
+          "label": "DOMPurify"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-cj63-jhhr-wcxv",
+          "label": "GHSA-cj63-jhhr-wcxv"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-cjmm-f4jc-qw8r",
+          "label": "GHSA-cjmm-f4jc-qw8r"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-cj63-jhhr-wcxv",
+          "label": "GHSA-cj63-jhhr-wcxv"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-cjmm-f4jc-qw8r",
+          "label": "GHSA-cjmm-f4jc-qw8r"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/cure53/DOMPurify/releases/tag/3.3.2",
+          "label": "3.3.2"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/cure53/DOMPurify/commit/5e56114cb24079ce52dbc51f76e494b77afa5153",
+          "label": "Fix commit · 5e56114cb2"
+        }
+      ],
+      "qualification_rationale": "Q1: gh api repos/cure53/DOMPurify returns HTTP 200 with 17k stars; public repo, no auth required. Q2: DOMPurify is a pure JavaScript library (package.json, npm-installable); runs in Node.js with jsdom — fully testable in a debian:slim Docker container. Q3-Step0: verbatim_excerpt fields describe a PoC in prose but contain no runnable code blocks and no exploitation confirmation output — no PoC header, no exploit+output pair. Q3-Step1: Web searches for GHSA-cj63-jhhr-wcxv, GHSA-cjmm-f4jc-qw8r and 'DOMPurify prototype pollution exploit 2026' found zero GitHub repos with PoC code for these two specific GHSAs; GitHub security advisory pages show no References URLs and no code; OSV pages only link to the GitHub advisory and releases page; the trace37.com writeup (CVE-2026-41238) covers a distinct, newer bug fixed in 3.4.0 not 3.3.2. Q4a: GHSA-cj63-jhhr-wcxv requires only attacker-supplied HTML and either pre-existing prototype pollution or USE_PROFILES config — no credentials required; single-constraint only. GHSA-cjmm-f4jc-qw8r requires attacker-controlled HTML and a predicate function in ADD_ATTR config — non-default config but no auth. Neither bug requires both auth AND non-default config simultaneously. Q4b: no pre-captured credential needed. Q5: DOMPurify is a browser/Node.js sanitizer library (npm package, no standalone service); deployment-type library.",
+      "fix_commit_shas": [
+        "5e56114cb24079ce52dbc51f76e494b77afa5153"
+      ]
+    },
+    {
+      "id": "mlflow-mlflow-cve-2026-2652",
+      "title": "MLflow: unauthenticated access to certain FastAPI routes",
+      "teaser": "A not authenticated remote attacker could exploit this missing authorization check to access job management and trace ingestion endpoints without credentials, gaining the ability to enumerate running jobs, cancel jobs, read job results, and inject arbitrary trace data into any experiment.",
+      "package": "mlflow",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-2652"
+      ],
+      "ghsa_ids": [
+        "GHSA-75cm-x2w3-8mgf"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.11.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 26212,
+      "tags": [
+        "rce",
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "commit",
+          "url": "https://github.com/mlflow/mlflow/commit/bb62e773263c14e9ba4d1a82fe72d0de2442c6aa",
+          "label": "Fix commit · bb62e77326"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-75cm-x2w3-8mgf",
+          "label": "GHSA-75cm-x2w3-8mgf"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-75cm-x2w3-8mgf",
+          "label": "GHSA-75cm-x2w3-8mgf"
+        }
+      ],
+      "qualification_rationale": "Q1: github.com/mlflow/mlflow is public. Q2: pip install mlflow works in a debian:slim container. Q3: No public PoC found — advisory page and TheHackerWire article describe the bug conceptually, no exploit code. Q4: Requires --app-name basic-auth + uvicorn/ASGI (non-default deployment), but attacker needs NO credentials — the fix commit (bb62e773) shows _find_fastapi_validator() returned None for all non-/gateway/ paths, so /ajax-api/3.0/jobs/* and /v1/traces were entirely unauthenticated even with basic-auth enabled. Only one gate (non-default config) applies; Q4 is not triggered.",
+      "fix_commit_shas": [
+        "bb62e773263c14e9ba4d1a82fe72d0de2442c6aa"
+      ]
+    },
+    {
+      "id": "guardrails-ai-guardrails-cve-2026-31233",
+      "title": "Guardrails AI contains a code injection vulnerability in its Hub package installation mechanism",
+      "teaser": "A not authenticated remote attacker could exploit this code injection to execute arbitrary Python code on the victim's machine by publishing a malicious package to the Guardrails Hub and tricking a victim into running guardrails hub install, achieving unauthenticated remote code execution.",
+      "package": "guardrails-ai",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-31233"
+      ],
+      "ghsa_ids": [
+        "GHSA-r6hf-g5x6-7pv9"
+      ],
+      "osv_ids": [],
+      "fixed_in": [],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 6947,
+      "tags": [
+        "supply-chain",
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/guardrails-ai/guardrails",
+          "label": "guardrails"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-31233",
+          "label": "CVE-2026-31233"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-r6hf-g5x6-7pv9",
+          "label": "GHSA-r6hf-g5x6-7pv9"
+        }
+      ],
+      "qualification_rationale": "Repo clones cleanly. Guardrails-AI is a Python framework installable via pip in a Debian container. The post_install execution path is triggered unconditionally when installing Hub packages — no authentication required for public Hub packages. No standalone PoC found; advisory describes the vulnerability class without a working exploit payload.",
+      "fix_commit_shas": []
+    },
+    {
+      "id": "kopia-kopia-cve-2026-45695",
+      "title": "Kopia: RCE via SSH ProxyCommand Injection",
+      "teaser": "An unauthenticated attacker can execute arbitrary OS commands as the Kopia server process user by sending a single HTTP POST to /api/v1/repo/exists with a crafted SFTP storage configuration. When the server is started with --insecure --without-password, all authentication is disabled (getAuthenticator() returns nil). The endpoint unmarshals the attacker-supplied JSON body and passes the storage configuration directly to blob.NewStorage. For SFTP backends with externalSSH:true, getSFTPClientExternal splits opt.SSHArguments on ASCII spaces and passes the resulting tokens directly to exec.CommandContext. An -oProxyCommand=<cmd> token in sshArguments causes OpenSSH to invoke <cmd> via $SHELL -c, achieving RCE before any TCP connection is attempted.",
+      "package": "github.com/kopia/kopia",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45695"
+      ],
+      "ghsa_ids": [
+        "GHSA-2q4c-3mrw-63c3"
+      ],
+      "osv_ids": [
+        "GO-2026-5009"
+      ],
+      "fixed_in": [
+        "0.23.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 13320,
+      "tags": [
+        "rce",
+        "auth-bypass",
+        "injection"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/kopia/kopia",
+          "label": "kopia"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-2q4c-3mrw-63c3",
+          "label": "GHSA-2q4c-3mrw-63c3"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://orca.security/resources/blog/kopia-backup-rce-vulnerability/",
+          "label": ""
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/kopia/kopia/pull/5354",
+          "label": "5354"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/kopia/kopia/commit/981d5f95ad7b64f834c46b7ac244d524644fbb46",
+          "label": "Fix commit · 981d5f95ad"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-2q4c-3mrw-63c3",
+          "label": "GHSA-2q4c-3mrw-63c3"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GO-2026-5009",
+          "label": "GO-2026-5009"
+        }
+      ],
+      "qualification_rationale": "Repo is public (13k stars, private=false). kopia releases pre-built Linux binaries (deb packages for amd64/arm64) and the HTTP server is a built-in feature, easily containerized. No public PoC found: GitHub search yields only Orca Security blog and daily threat intel repos without exploit code; Orca Security blog explicitly states 'No public proof-of-concept exploit code has been identified.' The fix (PR 5354, v0.23.0) restricts --without-password to loopback binds but the injection in sftp_storage.go (strings.Split(opt.SSHArguments,' ')) remains present. Prerequisites: server started without password AND SFTP externalSSH=true AND non-loopback bind — all non-default configs but no attacker credentials required.",
+      "fix_commit_shas": [
+        "981d5f95ad7b64f834c46b7ac244d524644fbb46"
+      ]
+    },
+    {
+      "id": "coder-coder-cve-2026-45796",
+      "title": "Coder: Unauthenticated SSRF via Azure Instance Identity Endpoint",
+      "teaser": "An unauthenticated attacker can force the Coder server to issue arbitrary outbound HTTP GET requests by POSTing a crafted PKCS#7 signature to /api/v2/workspaceagents/azure-instance-identity. The attacker self-signs a certificate with a CN matching *.metadata.azure.com (satisfying the allowedSigners regex) and an IssuingCertificateURL pointing to an attacker-controlled host. The pre-fix Validate() function fetches each IssuingCertificateURL using http.DefaultClient with no restrictions, and the wrapped HTTP client error (including connection-level details) is returned in the HTTP 401 response Detail field. This enables internal network reconnaissance and requests to sensitive endpoints such as cloud metadata services.",
+      "package": "github.com/coder/coder",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-45796"
+      ],
+      "ghsa_ids": [
+        "GHSA-686c-7vgv-v3fx"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.24.5",
+        "2.29.13",
+        "2.30.8",
+        "2.31.12",
+        "2.32.2",
+        "2.33.3"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 13338,
+      "tags": [
+        "rce",
+        "auth-bypass",
+        "ssrf"
+      ],
+      "references": [
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-686c-7vgv-v3fx",
+          "label": "GHSA-686c-7vgv-v3fx"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/coder/coder/commit/57b11d405f17492aa789d4b9ff33366f961a37f8",
+          "label": "Fix commit · 57b11d405f"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-686c-7vgv-v3fx",
+          "label": "GHSA-686c-7vgv-v3fx"
+        }
+      ],
+      "qualification_rationale": "Q1: github.com/coder/coder is public, no auth needed to clone. Q2: Go binary, official Docker images available (ghcr.io/coder/coder); installable in a container. Q3: No public PoC found — GHSA advisory gives technical description only (craft PKCS#7 cert with CN matching *.metadata.azure.com and IssuingCertificateURL pointing to target), no exploit code; GitHub search returned no PoC repos. Q4: The Azure instance identity endpoint POST /api/v2/workspaceagents/azure-instance-identity requires no auth and is present in all Coder deployments by default (not an opt-in feature). No attacker credentials needed.",
+      "fix_commit_shas": [
+        "57b11d405f17492aa789d4b9ff33366f961a37f8"
+      ]
+    },
+    {
+      "id": "getarcaneapp-arcane-cve-2026-47179",
+      "title": "Arcane Has an Authenticated Arbitrary Host File Read via Docker Compose Include Directives",
+      "teaser": "An authenticated admin user could exploit this path traversal to plant a Docker Compose project with an include directive pointing to an arbitrary host file and then read back the file contents through the project file API, achieving arbitrary read of any file readable by the Arcane backend process.",
+      "package": "github.com/getarcaneapp/arcane/backend",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47179"
+      ],
+      "ghsa_ids": [
+        "GHSA-c3px-h233-h6fq"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "1.19.4"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 5631,
+      "tags": [
+        "sqli",
+        "credential-theft"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/getarcaneapp/arcane",
+          "label": "arcane"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-c3px-h233-h6fq",
+          "label": "GHSA-c3px-h233-h6fq"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/getarcaneapp/arcane/commit/b6cbffabf61dbc3f12a28d3b5830e3c6b7e67daf",
+          "label": "Fix commit · b6cbffabf6"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. Ships first-party Docker support (docker/ directory with Dockerfile and compose files). Bug: ProjectService.GetProjectFileContent returns contents of any file referenced via Docker Compose include: directives before path-traversal validation runs; CreateProject writes attacker-supplied compose content. An authenticated user creates a project with include: pointing to arbitrary host files, then reads those files back — including admin password hashes and secrets on the Docker host. Auth required (authenticated user), but no non-default config. Dual-gate rejection criterion not met. No standalone PoC repos found; OSV references only fix commit and advisory.",
+      "fix_commit_shas": [
+        "b6cbffabf61dbc3f12a28d3b5830e3c6b7e67daf"
+      ]
+    },
+    {
+      "id": "miguelgrinberg-flask-httpauth-cve-2026-34531",
+      "title": "Flask-HTTPAuth invokes token verification callback when missing or empty token was given by client",
+      "teaser": "Flask-HTTPAuth calls the application's verify_token callback with token='' (empty string) when no Authorization header is present, instead of returning 401 immediately. Applications that store users with empty-string tokens (versus NULL) in their database will authenticate the unauthenticated caller as that user.",
+      "package": "flask-httpauth",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-34531"
+      ],
+      "ghsa_ids": [
+        "GHSA-p44q-vqpr-4xmg"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "4.8.1"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 1288,
+      "tags": [
+        "rce"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/miguelgrinberg/Flask-HTTPAuth",
+          "label": "Flask-HTTPAuth"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-p44q-vqpr-4xmg",
+          "label": "GHSA-p44q-vqpr-4xmg"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/miguelgrinberg/Flask-HTTPAuth/commit/b15ffe9e50e110d7174ccd944f642079e1dcf9ee",
+          "label": "Fix commit · b15ffe9e50"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. Flask-HTTPAuth is a PyPI package with pip install — Docker-installable in any Python container. Bug: Flask-HTTPAuth invokes the application's token verification callback with None or empty string when the client sends no Authorization header or empty token, rather than returning 401 immediately without invoking the callback. This breaks the framework's expected contract — applications that rely on Flask-HTTPAuth to gate callback invocation would be bypassed when the callback doesn't explicitly handle None. No auth required by the attacker (just send no token). No non-default config required in Flask-HTTPAuth itself. No advisory-embedded exploit code; standalone PoC repo search returned empty.",
+      "fix_commit_shas": [
+        "b15ffe9e50e110d7174ccd944f642079e1dcf9ee"
+      ]
+    },
+    {
+      "id": "strawberry-graphql-strawberry-cve-2026-35523",
+      "title": "PYSEC-2026-133",
+      "teaser": "An unauthenticated remote attacker could exploit this missing authentication state check to receive live GraphQL subscription data without completing the WebSocket handshake, bypassing any on_ws_connect access controls configured by the application.",
+      "package": "strawberry-graphql",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-35523"
+      ],
+      "ghsa_ids": [],
+      "osv_ids": [
+        "PYSEC-2026-133"
+      ],
+      "fixed_in": [
+        "0.312.3"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 4665,
+      "tags": [
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/strawberry-graphql/strawberry",
+          "label": "strawberry"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/advisories/GHSA-vpwc-v33q-mq89",
+          "label": "GHSA-vpwc-v33q-mq89"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/strawberry-graphql/strawberry/commit/0977a4e6",
+          "label": "Fix commit · 0977a4e6"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-35523",
+          "label": "CVE-2026-35523"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/strawberry-graphql/strawberry/commit/8433b7175588385cb4423839ce16f8a14db97731",
+          "label": "Fix commit · 8433b71755"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/PYSEC-2026-133",
+          "label": "PYSEC-2026-133"
+        }
+      ],
+      "qualification_rationale": "Repo is public (gh api confirms private=false, 4664 stars). Pure Python library installable via pip in any debian:slim container. No public PoC found: GitHub repo search for 'CVE-2026-35523' returns only CVE databases and advisories, no exploit repos; GHSA-vpwc-v33q-mq89 advisory contains no PoC code. Fix commit 0977a4e6 reveals the vulnerable code: strawberry/subscriptions/protocols/graphql_ws/handlers.py lacked a connection_acknowledged flag, allowing a client to send a 'start' message before connection_init completes, skipping the on_ws_connect auth hook entirely. The legacy graphql-ws subprotocol is enabled by default in all framework integrations — no non-default config required, no credentials required.",
+      "fix_commit_shas": [
+        "8433b7175588385cb4423839ce16f8a14db97731"
+      ]
+    },
+    {
+      "id": "theupdateframework-python-tuf-82b4ab26",
+      "title": "tuf has platform-dependent delegation path matching",
+      "teaser": "A not authenticated remote attacker could exploit this platform-dependent case normalization in authorization check to serve unauthorized targets through a delegated role and cause a Windows TUF client to accept attacker-supplied files as legitimate TUF-protected targets, bypassing the delegation trust model.",
+      "package": "tuf",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [],
+      "ghsa_ids": [
+        "GHSA-qp9x-wp8f-qgjj"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "7.0.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 1709,
+      "tags": [],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/theupdateframework/python-tuf",
+          "label": "python-tuf"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-qp9x-wp8f-qgjj",
+          "label": "GHSA-qp9x-wp8f-qgjj"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://advisories.gitlab.com/pypi/tuf/GHSA-qp9x-wp8f-qgjj/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/theupdateframework/python-tuf/commit/8ed4414946041030b264871ac41b929cf15774a5",
+          "label": "Fix commit · 8ed4414946"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://pypi.org/project/tuf/",
+          "label": ""
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/theupdateframework/python-tuf/commit/353bdb767db56fd4667c9bcf56b710d50fdc2ac0",
+          "label": "Fix commit · 353bdb767d"
+        }
+      ],
+      "qualification_rationale": "Q1: Public GitHub repo (1709 stars), no auth required, freely cloneable. Q2: Pure Python library distributed on PyPI as 'tuf'; pip install works in a debian:slim container. Q3: No PoC found — stub's verbatim_excerpt contains only an attack-scenario description (not a runnable exploit with confirmation output); web searches return only advisory reposts (DailyCVE, GitLab GLAD, vulnerability.circl.lu); no exploit-db entry; no GitHub repos referencing the fix commit as a PoC. Q4: Triggering requires the attacker to control a delegated role in the TUF repository AND a Windows client; controlling a delegated role is the attacker's own position in the trust hierarchy — not a pre-captured credential nor a non-default configuration. The Windows requirement is a client platform constraint, not an opt-in feature flag; neither Q4a nor Q4b rejection conditions are met. Q5: Library — python-tuf is imported by downstream software (pip, Sigstore, etc.); no standalone network service. The bug in DelegatedRole._is_target_in_pathpattern (fnmatch.fnmatch → case-insensitive on Windows) allows an attacker-controlled delegated role to claim authorization for targets it should not be authorized to serve on Windows clients, bypassing TUF's trust model. Fix commit 8ed4414946041030b264871ac41b929cf15774a5 replaces fnmatch.fnmatch with fnmatch.fnmatchcase to enforce case-sensitive matching on all platforms.",
+      "fix_commit_shas": [
+        "353bdb767db56fd4667c9bcf56b710d50fdc2ac0"
+      ]
+    },
+    {
+      "id": "apache-artemis-cve-2026-27446",
+      "title": "Apache Artemis and Apache ActiveMQ Artemis are Missing Authentication for Critical Functions",
+      "teaser": "An unauthenticated remote attacker could exploit this missing authentication check to force the broker to establish an outbound federation connection to an attacker-controlled server, gaining the ability to inject messages into and exfiltrate messages from any broker queue.",
+      "package": "org.apache.activemq:artemis-server",
+      "ecosystem": "Maven",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-27446"
+      ],
+      "ghsa_ids": [
+        "GHSA-fw88-pf9m-p947"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "2.52.0"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T18:00:34+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 1018,
+      "tags": [
+        "rce",
+        "auth-bypass"
+      ],
+      "references": [
+        {
+          "kind": "commit",
+          "url": "https://github.com/apache/activemq-artemis/commit/521e672e",
+          "label": "Fix commit · 521e672e"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-fw88-pf9m-p947",
+          "label": "GHSA-fw88-pf9m-p947"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://www.openwall.com/lists/oss-security/2026/03/03/4",
+          "label": "4"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-27446",
+          "label": "CVE-2026-27446"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/apache/artemis/commit/1e05c01410ea26e6fe832ededb3683df3ef83645",
+          "label": "Fix commit · 1e05c01410"
+        }
+      ],
+      "qualification_rationale": "Q1: github.com/apache/activemq-artemis is public, accessible without auth. Q2: Java Maven project; standard docker image available (apache/activemq-artemis), installable in a container. Q3: No public PoC found — CISA KEV listed (confirmed exploitation) but no technical write-up or exploit code on GitHub or public search. Q4: No attacker auth required; the Core protocol federation downstream connect packet can be sent unauthenticated to the default 'artemis' acceptor on port 61616. Fix commit 521e672e confirms pre-fix behavior accepted downstream federation packets with no authentication from any Core client; the new downstream-authorization config attribute defaults to 'not defined → reject all,' meaning the vulnerable pre-fix path was unconditional. No special federation configuration on the broker side is needed to trigger the outbound connection.",
+      "fix_commit_shas": [
+        "1e05c01410ea26e6fe832ededb3683df3ef83645"
+      ]
+    },
+    {
+      "id": "eidetic-labs-stigmem-06810db0",
+      "title": "stigmem-node's Postgres schema identifier handling required defensive quoting",
+      "teaser": "An operator-influenced remote attacker could exploit this SQL injection via unquoted identifier interpolation to execute arbitrary DDL against the Postgres database and corrupt or exfiltrate stored facts, achieving unauthorised data manipulation on the node database.",
+      "package": "stigmem-node",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [],
+      "ghsa_ids": [
+        "GHSA-9pc9-4crj-mhpj",
+        "GHSA-9vp8-3hmv-8fgh",
+        "GHSA-fp6w-8wpg-74g5",
+        "GHSA-jmfc-hfjq-pxcp",
+        "GHSA-w7pm-9g55-mxfm",
+        "GHSA-xh5j-xjfq-qvvx"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.9.0a2"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 4,
+      "tags": [
+        "rce",
+        "auth-bypass",
+        "cryptography",
+        "multi-tenant"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/eidetic-labs/stigmem",
+          "label": "stigmem"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-9pc9-4crj-mhpj",
+          "label": "GHSA-9pc9-4crj-mhpj"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/eidetic-labs/stigmem/commit/ae9a359e2776",
+          "label": "Fix commit · ae9a359e27"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/eidetic-labs/stigmem/releases/tag/v0.9.0a2",
+          "label": "v0.9.0a2"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/eidetic-labs/stigmem/commit/18ec5dbe3a3970d804f2013b4ae53dd2da8ed4ac",
+          "label": "Fix commit · 18ec5dbe3a"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-9vp8-3hmv-8fgh",
+          "label": "GHSA-9vp8-3hmv-8fgh"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-fp6w-8wpg-74g5",
+          "label": "GHSA-fp6w-8wpg-74g5"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-jmfc-hfjq-pxcp",
+          "label": "GHSA-jmfc-hfjq-pxcp"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-w7pm-9g55-mxfm",
+          "label": "GHSA-w7pm-9g55-mxfm"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-xh5j-xjfq-qvvx",
+          "label": "GHSA-xh5j-xjfq-qvvx"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo is public (private=false, gh api confirmed). Q2: Project ships a Dockerfile and docker-compose.yml — straightforward Python 3.11-slim Docker install via uv; stigmem-node binary entry point exposed on port 8765. Q3-Step0: No PoC section headers or runnable exploit with confirmation output in any verbatim_excerpt. Q3-Step1: Web searches for GHSA-9pc9-4crj-mhpj and 'stigmem SQL injection exploit' returned no matching PoC or technical write-up. Q4: The SQL injection is in PostgresBackend construction — schema identifier string interpolated unquoted into SET search_path and CREATE SCHEMA DDL statements (options=f'-c search_path={self._schema}' and f'CREATE SCHEMA IF NOT EXISTS {self._schema}'). Fix adds _validate_schema_name() with regex guard plus psycopg2.sql.Identifier quoting. The bug requires the Postgres backend to be active (non-default; default is SQLite) but requires no credentials — an operator who accidentally derives the schema from tenant/request input exposes the injection without any auth requirement. Only one constraint (non-default config), not the disqualifying both-gates-simultaneously condition. Q5: Standalone service — ships CLI entry point stigmem-node, Dockerfile, docker-compose.yml, exposes HTTP API on port 8765.",
+      "fix_commit_shas": [
+        "18ec5dbe3a3970d804f2013b4ae53dd2da8ed4ac"
+      ]
+    },
+    {
+      "id": "metal3-io-cluster-api-provider-metal3-93af7280",
+      "title": "CAPM3 vulnerable to Cross-Namespace resource access",
+      "teaser": "An authenticated remote attacker could exploit this missing namespace boundary enforcement to read secrets, claim BareMetalHost resources, and access data templates belonging to other namespaces, gaining cross-namespace read and resource-claim access on the CAPM3 management cluster.",
+      "package": "github.com/metal3-io/cluster-api-provider-metal3",
+      "ecosystem": "Go",
+      "severity": "CRITICAL",
+      "cve_ids": [],
+      "ghsa_ids": [
+        "GHSA-rf84-wr5g-m3rp"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "1.11.8",
+        "1.12.5"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 277,
+      "tags": [
+        "rce",
+        "webhook"
+      ],
+      "references": [
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-rf84-wr5g-m3rp",
+          "label": "GHSA-rf84-wr5g-m3rp"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/metal3-io/cluster-api-provider-metal3",
+          "label": "cluster-api-provider-metal3"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/metal3-io/cluster-api-provider-metal3/pull/3288",
+          "label": "3288"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://github.com/metal3-io/cluster-api-provider-metal3/pull/3327",
+          "label": "3327"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://arxiv.org/html/2507.03387v3",
+          "label": "2507.03387v3"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/metal3-io/cluster-api-provider-metal3/commit/f89b4b8c8c8d2ae0f70d9c274a6c6ebfe7bd2612",
+          "label": "Fix commit · f89b4b8c8c"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo is public on GitHub (Apache-2.0, 277 stars), confirmed via gh api with no auth challenge. Q2: Go Kubernetes operator; can be tested with kind cluster in Docker — standard Go build + Kubernetes tooling, no platform-specific dependencies. Q3 Step 0: verbatim_excerpt has no PoC section header and no runnable exploit with confirmation output — only conceptual description. Q3 Step 1: Web search for GHSA-rf84-wr5g-m3rp and 'CAPM3 cross-namespace PoC' found no public PoC or technical write-up with reproduction steps; arxiv paper 2507.03387 mentions the vulnerability class but hides details for ethical reasons. Q4: Auth required (RBAC to create/modify Metal3Machine or Metal3DataClaim), but NO non-default configuration needed — a stock CAPM3 install without any special opt-in flags is vulnerable. The conjunction rule (auth AND non-default config) is not triggered; auth alone is acceptable. Q5: Standalone Kubernetes operator (cluster-deployed controller), not a library.",
+      "fix_commit_shas": [
+        "f89b4b8c8c8d2ae0f70d9c274a6c6ebfe7bd2612"
+      ]
+    },
+    {
+      "id": "hapijs-wreck-cve-2026-44979",
+      "title": "@hapi/wreck leaks sensitive `Proxy-Authorization` header across cross-hostname redirects",
+      "teaser": "When @hapi/wreck follows a 3xx redirect to a different hostname with redirects > 0, it strips Authorization and Cookie headers but forwards Proxy-Authorization to the new host. An attacker who can cause the first server to redirect to an attacker-controlled hostname receives the victim application's proxy credentials.",
+      "package": "@hapi/wreck",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-44979"
+      ],
+      "ghsa_ids": [
+        "GHSA-vhjm-w67q-g75c"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "18.1.1"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 378,
+      "tags": [
+        "auth-bypass",
+        "credential-theft"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/hapijs/wreck",
+          "label": "wreck"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-vhjm-w67q-g75c",
+          "label": "GHSA-vhjm-w67q-g75c"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/hapijs/wreck/commit/a5b6fac9c684621c1d5733d10a0257697cfea373",
+          "label": "Fix commit · a5b6fac9c6"
+        }
+      ],
+      "qualification_rationale": "Repo public. @hapi/wreck is on npm — Docker-installable in any Node.js container. Bug: when following 3xx redirects, wreck strips Authorization and Cookie headers but NOT Proxy-Authorization, forwarding proxy credentials to cross-hostname redirect targets. Non-default config required (caller must set redirects > 0; default is false/0), but NO auth required — the attacker just needs to control the redirect target. Dual-gate rejection criterion not met (only one gate: non-default config). No public PoC found: GitHub CVE search returns zero repos; advisory describes the header-stripping omission but provides no exploit code.",
+      "fix_commit_shas": [
+        "a5b6fac9c684621c1d5733d10a0257697cfea373"
+      ]
+    },
+    {
+      "id": "astral-sh-tokio-tar-e2672847",
+      "title": "astral-tokio-tar has a PAX Header Desynchronization issue",
+      "teaser": "A not authenticated remote attacker could exploit this PAX header desynchronization to smuggle attacker-controlled files onto the target filesystem, achieving differential extraction and arbitrary file write relative to the extraction directory.",
+      "package": "astral-tokio-tar",
+      "ecosystem": "crates.io",
+      "severity": "CRITICAL",
+      "cve_ids": [],
+      "ghsa_ids": [
+        "GHSA-3cv2-h65g-fgmm"
+      ],
+      "osv_ids": [
+        "RUSTSEC-2026-0145"
+      ],
+      "fixed_in": [
+        "0.6.2"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-31T09:26:03+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 76,
+      "tags": [],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/astral-sh/tokio-tar",
+          "label": "tokio-tar"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-3cv2-h65g-fgmm",
+          "label": "GHSA-3cv2-h65g-fgmm"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/RUSTSEC-2026-0145",
+          "label": "RUSTSEC-2026-0145"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/astral-sh/tokio-tar/commit/0505c0b06d19362d7ce002ba8dd932569097beab",
+          "label": "Fix commit · 0505c0b06d"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0112.html",
+          "label": "RUSTSEC-2026-0112.html"
+        },
+        {
+          "kind": "advisory",
+          "url": "https://thehackernews.com/2025/10/tarmageddon-flaw-in-async-tar-rust.html",
+          "label": "tarmageddon-flaw-in-async-tar-rust.html"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/astral-sh/tokio-tar/commit/0ec9d6a2cb6af54f93b0c525f587b4e5726f87af",
+          "label": "Fix commit · 0ec9d6a2cb"
+        }
+      ],
+      "qualification_rationale": "Q1: Repo is public (astral-sh/tokio-tar, 76 stars). Q2: Rust crate with standard Cargo.toml, builds cleanly with cargo test in a Debian/Rust Docker container. Q3: No public PoC found — web searches for GHSA-3cv2-h65g-fgmm, RUSTSEC-2026-0145, and 'tokio-tar PAX exploit' return only advisories and conceptual write-ups (TARmageddon articles from Security Affairs and The Hacker News, GlobalSecurityMag), no functional exploit code or confirmation output; GitHub repo search found no PoC repos referencing the fix. Advisory bodies contain no PoC headers or runnable exploit blocks. Q4: Triggering requires only passing an attacker-controlled tar archive to the library — no authentication and no non-default configuration required. Q5: Pure Rust async-tar library (no standalone binary), downstream callers pass untrusted tar archives directly to the vulnerable parser.",
+      "fix_commit_shas": [
+        "0ec9d6a2cb6af54f93b0c525f587b4e5726f87af"
+      ]
+    },
+    {
+      "id": "bkddfs-shamefile-cve-2026-47144",
+      "title": "Shamefile has an arbitrary file read via shamefile.yaml in shame next",
+      "teaser": "The shame next command displays a code snippet by reading the source file at the path specified in shamefile.yaml's location field without validating the path is within the project directory. An attacker who controls shamefile.yaml can set location to /etc/passwd:1 or ../../secret.txt:1 to exfiltrate one line of any file readable by the current user per invocation.",
+      "package": "shamefile",
+      "ecosystem": "npm",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-47144"
+      ],
+      "ghsa_ids": [
+        "GHSA-x6p3-76f2-xxvh"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "0.1.7"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 3,
+      "tags": [
+        "rce",
+        "path-traversal"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/BKDDFS/shamefile",
+          "label": "shamefile"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-x6p3-76f2-xxvh",
+          "label": "GHSA-x6p3-76f2-xxvh"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/BKDDFS/shamefile/commit/77b0aeea318503582818c708518c601fedc43557",
+          "label": "Fix commit · 77b0aeea31"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. shamefile is installable via pip or cargo — Docker-wrappable in Debian container. Bug: Path traversal in shame next — format_entry_snippet reads a source file from disk using the location field from shamefile.yaml as a path without sanitization, disclosing files outside the repository one line per invocation. Attacker controls shamefile.yaml via a malicious repo commit; victim runs shame next in that directory. No auth required, no non-default config. Fix commit and PR #80 document the bug technically with no working exploit payload attached. No standalone PoC repos found.",
+      "fix_commit_shas": [
+        "77b0aeea318503582818c708518c601fedc43557"
+      ]
+    },
+    {
+      "id": "ruby-zlib-cve-2026-27820",
+      "title": "Buffer Overflow in Zlib::GzipReader ungetc via large input leads to memory corruption",
+      "teaser": "Calling Zlib::GzipReader#ungetc with a byte string longer than the remaining buffer capacity triggers a heap buffer overflow in zstream_buffer_ungets. The pre-fix expansion guard fires only when the buffer has no space at all, not when it lacks the len additional bytes needed for the prepend memmove.",
+      "package": "zlib",
+      "ecosystem": "RubyGems",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-27820"
+      ],
+      "ghsa_ids": [
+        "GHSA-g857-hhfv-j68w"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "3.0.1",
+        "3.1.2",
+        "3.2.3"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "ANALYZED",
+      "repo_stars": 72,
+      "tags": [],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/ruby/zlib",
+          "label": "zlib"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-g857-hhfv-j68w",
+          "label": "GHSA-g857-hhfv-j68w"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/ruby/zlib/commit/899f9fdb801062a3f2714b242f57477aabeca644",
+          "label": "Fix commit · 899f9fdb80"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. zlib is bundled with standard Ruby and available as a Ruby gem — Docker-installable in any Ruby container. Bug: Buffer overflow in Zlib::GzipReader#ungetc via large input — zstream_buffer_ungets prepends caller-provided bytes without guaranteeing backing string capacity before memcpy/memmove, causing memory corruption. Triggerable with attacker-supplied data, no auth required, no non-default config. No advisory-embedded exploit code visible; HackerOne report URL in references but H1 reports are private by default. No standalone PoC repo found.",
+      "fix_commit_shas": [
+        "899f9fdb801062a3f2714b242f57477aabeca644"
+      ]
+    },
+    {
+      "id": "jelmer-dulwich-cve-2026-42563",
+      "title": "Dulwich Vulnerable to Command Injection via Merge Driver Path",
+      "teaser": "Dulwich's ProcessMergeDriver substitutes the file path (from the git tree, controllable by an attacker via a malicious branch) into the merge driver command via the %P placeholder and executes it with subprocess.run(..., shell=True). An att",
+      "package": "dulwich",
+      "ecosystem": "PyPI",
+      "severity": "CRITICAL",
+      "cve_ids": [
+        "CVE-2026-42563"
+      ],
+      "ghsa_ids": [
+        "GHSA-9277-mp7x-85jf"
+      ],
+      "osv_ids": [],
+      "fixed_in": [
+        "1.2.5"
+      ],
+      "action": null,
+      "discovered_at": "2026-05-30T19:22:38+00:00",
+      "poc_status": "QUALIFYING",
+      "repo_stars": 2241,
+      "tags": [
+        "supply-chain",
+        "rce",
+        "injection"
+      ],
+      "references": [
+        {
+          "kind": "advisory",
+          "url": "https://github.com/jelmer/dulwich",
+          "label": "dulwich"
+        },
+        {
+          "kind": "osv",
+          "url": "https://osv.dev/vulnerability/GHSA-9277-mp7x-85jf",
+          "label": "GHSA-9277-mp7x-85jf"
+        },
+        {
+          "kind": "commit",
+          "url": "https://github.com/jelmer/dulwich/commit/073f4dfa9840af2da59887ed828b026b609faa6c",
+          "label": "Fix commit · 073f4dfa98"
+        }
+      ],
+      "qualification_rationale": "Repo public, not archived. dulwich is a PyPI package with pip install — Docker-installable in Debian container. Bug: ProcessMergeDriver substitutes attacker-controlled file path (from git tree entry in a malicious branch) into merge driver command via %P placeholder with subprocess.run(shell=True), enabling command injection. Attacker provides a malicious repository with path-injected tree entry; victim runs a merge operation. No auth required (just running dulwich against a malicious repo). No non-default config needed. No advisory-embedded exploit code; standalone PoC repo search returned empty.",
+      "fix_commit_shas": [
+        "073f4dfa9840af2da59887ed828b026b609faa6c"
+      ]
+    }
+  ]
+}

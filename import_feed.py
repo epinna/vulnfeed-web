@@ -349,6 +349,9 @@ def process_entry(entry_dir: Path) -> dict | None:
     clone_of         = stub_data.get("clone_of") or data.get("clone_of") or None
     clone_source_url = stub_data.get("clone_source_url") or data.get("clone_source_url") or None
 
+    raw_stars = (disc.get("repo_stars") if disc else None) or data.get("repo_stars")
+    repo_stars = int(raw_stars) if isinstance(raw_stars, (int, float)) and raw_stars > 0 else None
+
     entry: dict = {
         "id":           entry_dir.name,
         "title":        title,
@@ -364,6 +367,7 @@ def process_entry(entry_dir: Path) -> dict | None:
         "discovered_at": data.get("discovered_at", ""),
         "poc_status":   status,
         "priority_score": data.get("priority_score", 0.0),
+        "repo_stars":   repo_stars,
         "tags":         infer_tags(data),
         "references":   build_refs(data, disc),
     }
