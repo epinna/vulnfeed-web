@@ -71,7 +71,6 @@ _STATUS_TO_TIER = {
     "sandbox-aborted": "ANALYZED",
     "not-triggered":   "ANALYZED",
     "analyzed":        "ANALYZED",
-    "analysis-aborted":"QUALIFYING",
     "qualified":       "QUALIFYING",
 }
 
@@ -123,7 +122,7 @@ def pipeline_tier(entry_dir: Path) -> str | None:
             status = s.get("status", "")
             if status in _STATUS_TO_TIER:
                 return _STATUS_TO_TIER[status]
-            if status in ("rejected", "deferred", "stub"):
+            if status in ("rejected", "deferred", "stub", "analysis-aborted"):
                 return None
         except Exception:
             pass  # fall through to artifact inference
