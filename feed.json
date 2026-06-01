@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-05-31T19:35:38+00:00",
-  "pipeline": "sub-zero-days/0.1",
+  "pipeline": "vulnfeed/0.1",
   "total_candidates_analyzed": 2648,
   "confirmed_pocs": 22,
   "entries": [

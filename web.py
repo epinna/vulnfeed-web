@@ -101,6 +101,7 @@ _STATUS_TO_TIER = {
     "sandbox-aborted": "ANALYZED",
     "not-triggered":   "ANALYZED",
     "analyzed":        "ANALYZED",
+    "approved":        "ANALYZED",
     "qualified":       "QUALIFYING",
 }
 
@@ -433,7 +434,7 @@ def build_feed_and_metrics(research: Path) -> tuple[dict, dict, dict]:
     ]
     feed = {
         "generated_at":              now,
-        "pipeline":                  "sub-zero-days/0.1",
+        "pipeline":                  "vulnfeed/0.1",
         "total_candidates_analyzed": total_dirs,
         "confirmed_pocs":            totals["CONFIRMED"],
         "entries":                   confirmed,
@@ -453,7 +454,7 @@ def build_feed_and_metrics(research: Path) -> tuple[dict, dict, dict]:
 
     metrics = {
         "generated_at": now,
-        "pipeline":     "sub-zero-days/0.1",
+        "pipeline":     "vulnfeed/0.1",
         "funnel": {
             "discovered":  total_dirs,
             "qualified":   total_qualified,
@@ -512,7 +513,7 @@ def run_export(args) -> None:
 # Full 9-status taxonomy → display tier (superset of the public _STATUS_TO_TIER).
 STATUS_TIER = {
     "confirmed": "CONFIRMED",
-    "analyzed": "ANALYZED", "not-triggered": "ANALYZED", "sandbox-aborted": "ANALYZED",
+    "analyzed": "ANALYZED", "approved": "ANALYZED", "not-triggered": "ANALYZED", "sandbox-aborted": "ANALYZED",
     "qualified": "QUALIFYING", "analysis-aborted": "QUALIFYING",
     "rejected": "REJECTED", "deferred": "DEFERRED", "stub": "STUB", "unknown": "OTHER",
 }
@@ -636,10 +637,6 @@ def load_full_entry(entry_dir: Path) -> dict:
         "analysis": read_json(entry_dir / "analysis.json"),
         "analysis_md": read_text(entry_dir / "analysis.md"),
         "outcome_md": read_text(entry_dir / "outcome.md"),
-        # Operator approval axis (orthogonal to status). Read-only here; the
-        # human-approve skill / lib.approval owns writes. A future edit UI would
-        # POST to a handler that calls lib.approval.write_approval.
-        "approval": read_json(entry_dir / "approval.json"),
         "sandbox": None,
     }
     sb = entry_dir / "sandbox"
@@ -995,18 +992,6 @@ def render_detail(full: dict) -> str:
             qparts += f'<details class="raw"><summary>priority components</summary>{pretty_json(disc["priority_components"])}</details>'
     sec_qual = _section("Qualification", qparts)
 
-    # Approval (approval.json) — operator decision, orthogonal to status.
-    # Read-only display; absent file means the entry is still "waiting".
-    appr = full.get("approval") or {}
-    appr_status = appr.get("status") or "waiting"
-    aparts = _kv([
-        ("Status", esc(appr_status)),
-        ("Comment", esc(appr.get("comment", ""))),
-        ("Decided at", esc(appr.get("decided_at", ""))),
-        ("Decided by", esc(appr.get("decided_by", ""))),
-    ])
-    sec_approval = _section("Approval", aparts)
-
     # Markdown writeups
     sec_an_md = _section("analysis.md", render_markdown(full.get("analysis_md")))
     sec_outcome = _section("outcome.md", render_markdown(full.get("outcome_md")))
@@ -1038,15 +1023,14 @@ def render_detail(full: dict) -> str:
 
     # Raw blobs (everything, collapsible)
     raw = ""
-    for label, obj in (("status.json", full.get("status_json")), ("approval.json", full.get("approval")),
-                       ("stub.json", full.get("stub")),
+    for label, obj in (("status.json", full.get("status_json")), ("stub.json", full.get("stub")),
                        ("discovery.json", full.get("discovery")), ("analysis.json", full.get("analysis"))):
         if obj:
             raw += f'<details class="raw"><summary>{esc(label)}</summary>{pretty_json(obj)}</details>'
     sec_raw = _section("Raw artifacts", raw)
 
     body = head + "".join([
-        sec_overview, sec_internals, sec_vp, sec_trigger, sec_qual, sec_approval,
+        sec_overview, sec_internals, sec_vp, sec_trigger, sec_qual,
         sec_an_md, sec_outcome, sec_sandbox, sec_raw,
     ]) + "</div></main>"
     return html_page(f"{slug} — VulnFeed internal", body, scripts=f"<script>{DETAIL_JS}</script>")
@@ -1349,7 +1333,7 @@ INT_BANNER = (
 )
 FOOTER = (
     '<footer><div class="footer-inner"><div class="footer-brand">'
-    'Powered by&nbsp;<strong>sub-zero-days</strong>&nbsp;research engine</div>'
+    'Powered by&nbsp;<strong>vulnfeed</strong>&nbsp;research engine</div>'
     '<div class="footer-note">Details withheld pending responsible disclosure</div></div></footer>'
 )
 

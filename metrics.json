@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-05-31T19:35:38+00:00",
-  "pipeline": "sub-zero-days/0.1",
+  "pipeline": "vulnfeed/0.1",
   "funnel": {
     "discovered": 2648,
     "qualified": 1751,
